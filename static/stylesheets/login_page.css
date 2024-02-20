@@ -1,0 +1,75 @@
+body{
+    background: #3D3163;
+    margin-top: 0;
+}
+.main-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+div.login_form{
+
+    background: #8B7BC1;
+    padding: 15px 30px 30px;
+    margin-top: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+h1{
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+div.login_and_password{
+    background: #0F1E3F;
+    padding: 15px 15px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+button#button_submit{
+    background: #5F7CC0;
+    width: 100%;
+    padding: 8px 5px;
+    margin-top: 10px;
+    margin-right: 0;
+    border-radius: 6px;
+}
+button#button_submit:hover{
+    background: #0F1E3F;
+}
+#btn-reg{
+    background: #5F7CC0;
+    width: 100%;
+    padding: 8px 5px;
+    margin-top: 10px;
+    margin-right: 0;
+    border-radius: 6px;
+}
+#btn-reg:hover{
+    background: #0F1E3F;
+}
+label.txt_login{
+    background: #5F7CC0;
+    padding: 5px 5px;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+label.txt_psw{
+    background: #5F7CC0;
+    padding: 5px 5px;
+    width: 100%;
+}
+#username{
+    width: 100%;
+    padding-left: 5px;
+}
+#password{
+    width: 100%;
+    padding-left: 5px;
+}

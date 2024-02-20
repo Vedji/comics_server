@@ -1,0 +1,33 @@
+#content {
+      margin-top: 20px;
+    }
+
+    .book {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .book img {
+      width: 100px;
+      height: 150px;
+      margin-right: 10px;
+    }
+
+    .book-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .book-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .book-description {
+      margin-bottom: 5px;
+    }
+
+    .book-link {
+      color: blue;
+      text-decoration: underline;
+    }

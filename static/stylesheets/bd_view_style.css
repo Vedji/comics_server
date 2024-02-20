@@ -1,0 +1,38 @@
+.hidden {
+    display: none;
+}
+
+#popupForm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid black;
+}
+
+#popupForm h2 {
+    margin-top: 0;
+}
+
+#popupForm label {
+    display: block;
+    margin-top: 10px;
+}
+
+#popupForm input[type="text"] {
+    width: 100%;
+    padding: 5px;
+}
+
+#popupForm input[type="submit"] {
+    margin-top: 10px;
+}
+td{
+    border: 5px solid;
+    border-radius: 5px;
+    padding: 10px 10px;
+    padding-color: #000000;
+    border-color: burlywood;
+}

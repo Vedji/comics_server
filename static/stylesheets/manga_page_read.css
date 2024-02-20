@@ -1,0 +1,27 @@
+#manga_page_img {
+  display: block;
+  margin: 0 auto;
+}
+.page-navigation{
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 15px;
+}
+.navigation-button{
+    border-radius: 16px;
+    background-color: #2d2d2d;
+    border: none;
+}
+.case-image{
+    margin-top: 10px;
+}
+
+select {
+  margin-top: 20px;
+}
+
+option {
+  cursor: pointer;
+}

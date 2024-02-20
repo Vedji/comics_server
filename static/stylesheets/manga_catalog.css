@@ -1,0 +1,76 @@
+body{
+    background: #2A4480;
+    margin-top: 0;
+}
+main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#catalog-manga{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    background: #5F7CC0;
+    margin-top: 25px;
+    padding: 2px 2px;
+    width: 85%;
+    border-radius: 6px;
+
+}
+.catalog-manga-content{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: #3D3163;
+    padding: 4px 15px 15px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    border-radius: 6px;
+    width: 90%;
+}
+.catalog-manga-content:hover{
+    background: #352E4A;
+}
+.catalog-manga-content-a{
+    text-decoration: none;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 18px;
+    color: #DFB562;
+
+}
+.catalog-manga-content-a:hover{
+    text-decoration: underline;
+    color: #8F743F;
+
+}
+.catalog-manga-body{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    background: #8B7BC1;
+    padding: 9px 9px;
+    border-radius: 6px;
+    width: 98%  ;
+}
+.catalog-manga-body img{
+    width: 100px;
+    height: 150px;
+    background: #6C81B0;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+.catalog-manga-body p{
+    font-size: 16px;
+    min-height: 140px;
+    width: 98%;
+    height: 98%;
+    margin-top: 0;
+    margin-bottom: 2px;
+    background: #3D3163;
+    padding: 5px 5px;
+    border-bottom-right-radius: 6px;
+    border-top-right-radius: 6px;
+}

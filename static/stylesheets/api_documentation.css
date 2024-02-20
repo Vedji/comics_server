@@ -1,0 +1,49 @@
+body{
+    background: #4212AF;
+}
+.request-desc-content{
+    background: #270672;
+    padding: 3px;
+    margin-top: 15px;
+    border-radius: 6px;
+}
+.request-desc{
+    background: #006363;
+    margin: 4px 4px;
+    padding-top: 2px;
+    padding-bottom: 16px;
+    border-radius: 6px;
+}
+h4{
+    margin-left: 8px;
+    margin-bottom: 4px;
+}
+p{
+    margin-left: 15px;
+    margin-top: 5px;
+    margin-bottom: 6px;
+}
+code{
+    margin-left: 15px;
+    background: #ffffff;
+    padding: 4px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    margin-top: 8px;
+}
+pre{
+    margin-left: 15px;
+    margin-right: 25%;
+    background: #ffffff;
+    padding: 3px;
+    border-radius: 6px;
+}
+.request-type{
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+}
+.request-type code{
+    margin-left: 15px;
+}
