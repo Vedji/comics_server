@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/login_page.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index_style.css') }}">
+        <title>Страница входа</title>
+    </head>
+    <body>
+        <div id="menu">
+            <ul>
+                <li><a href="/catalog_manga">Каталог манги</a></li>
+                <li><a href="/api_documentation">API</a></li>
+                <li><a href="#">О нас</a></li>
+                <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <div class="login_form">
+                <h1> Регистрация </h1>
+                <form id="loginForm">
+                    <div class="login_and_password">
+                        <label for="username" class="txt_login">Логин:</label>
+                        <input type="text" id="username" name="username" required>
+                        <label for="password" class="txt_psw">Пароль:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" id="button_submit"> Зарегистрироваться </button>
+                </form>
+                <button id="btn-reg" onclick="location.href='login'"> Войти </button>
+            </div>
+        </div>
+        <script src="{{ url_for('static', filename='js_scripts/user_registration.js') }}"></script>
+        <script src="{{ url_for('static', filename='js_scripts/main_index.js' ) }}"></script>
+    </body>
+</html>

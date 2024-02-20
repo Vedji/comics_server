@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Catalog </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/manga_catalog.css') }}">
+</head>
+<body>
+  <div id="menu">
+    <ul>
+      <li><a href="/catalog_manga">Каталог манги</a></li>
+      <li><a href="/api_documentation">API</a></li>
+      <li><a href="#">О нас</a></li>
+      <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
+    </ul>
+  </div>
+  <main>
+    <div id="catalog-manga">
+        <!-- example element in catalog manga
+        <div class="catalog-manga-content">
+            <a href="/" class="catalog-manga-content-a"> Title name example </a>
+                <div class="catalog-manga-body">
+                    <img src="{{ url_for('static', filename='default_image.png') }}" alt="Image.jpg">
+                    <p> Manga description...some length manga description </p>
+                </div>
+        </div>
+        -->
+    </div>
+  </main>
+  <script src="{{ url_for('static', filename='js_scripts/main_index.js') }}"></script>
+  <script src="{{ url_for('static', filename='js_scripts/manga_catalog.js') }}"></script>
+</body>
+</html>

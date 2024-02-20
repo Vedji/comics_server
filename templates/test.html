@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Перемещение изображений</title>
+    <style>
+        #image-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .image-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+        .image-item img {
+            width: 100px;
+            height: auto;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Перемещение изображений</h1>
+    <input type="file" id="file-input">
+    <ul id="image-list"></ul>
+    <button onclick="submitImages()">Отправить</button>
+
+    <script>
+        // Получаем элементы DOM
+const fileInput = document.getElementById('file-input');
+const imageList = document.getElementById('image-list');
+
+// Обрабатываем событие выбора файла
+fileInput.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    const imageUrl = URL.createObjectURL(file);
+
+    // Создаем элемент списка изображений
+    const imageItem = document.createElement('li');
+    imageItem.classList.add('image-item');
+
+    // Создаем элемент изображения
+    const image = document.createElement('img');
+    image.src = imageUrl;
+
+    // Добавляем изображение в элемент списка
+    imageItem.appendChild(image);
+
+    // Добавляем элемент списка в список изображений
+    imageList.appendChild(imageItem);
+});
+
+// Функция для отправки изображений
+function submitImages() {
+    const images = imageList.getElementsByTagName('img');
+    const imageUrls = [];
+
+    // Получаем URL каждого изображения и добавляем в массив
+    for (let i = 0; i < images.length; i++) {
+        imageUrls.push(images[i].src);
+    }
+
+    // Отправляем массив URL на сервер или выполняем другие действия
+    console.log(imageUrls);
+}
+
+    </script>
+</body>
+</html>

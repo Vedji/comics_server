@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/manga_page_read.css') }}">
+    <title>Title</title>
+  </head>
+  <body>
+    <div id="menu">
+      <ul>
+        <li><a href="/catalog_manga">Каталог манги</a></li>
+        <li><a href="/api_documentation">API</a></li>
+        <li><a href="#">О нас</a></li>
+        <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
+      </ul>
+    </div>
+    <div class="case-image">
+      <img src="{{ url_for('static', filename='default_image.png') }}" id="manga_page_img">
+    </div>
+    <div class="page-navigation">
+      <select id="valueList">
+        <option value="1"> - 1 - </option>
+      </select>
+      <div>
+        <button id="btnPref" class="navigation-button"> P </button>
+        <button id="btnNext" class="navigation-button"> N </button>
+      </div>
+    </div>
+    <script src="{{ url_for('static', filename='js_scripts/main_index.js') }}"></script>
+  <script src="{{ url_for('static', filename='js_scripts/manga_page_read.js') }}"></script>
+  </body>
+</html>

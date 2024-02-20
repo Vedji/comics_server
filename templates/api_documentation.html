@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title> API </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/api_documentation.css') }}">
+  </head>
+  <body>
+    <div id="menu">
+    <ul>
+      <li><a href="/catalog_manga">Каталог манги</a></li>
+      <li><a href="/api_documentation">API</a></li>
+      <li><a href="#">О нас</a></li>
+      <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
+    </ul>
+  </div>
+    <div class="request-desc-content">
+      {% for item in api_desc %}
+        <div class="request-desc">
+          <h4> {{ item["request"] }} </h4>
+          <div class="request-type">
+            <p> Request type: </p>
+            <code> {{ item["request_type"] }} </code>
+          </div>
+          <div class="request-type">
+            <p> Тип вывода: </p>
+            <p> {{ item["type_output"] }} </p>
+          </div>
+          <p> Описание: </p>
+          <pre> {{ item["request_desc"] }}</pre>
+          <p> Описание параметров запроса: </p>
+          <pre> {{ item["argument_desc"] }}</pre>
+          <p> Пример вывода </p>
+          <pre> {{ item["example_output"] }} </pre>
+          <p> Описания вывода </p>
+          <pre> {{ item["request_example"] }} </pre>
+
+
+        </div>
+      {% endfor %}
+      <!--
+      <div class="request-desc">
+        <h4> Request example </h4>
+        <div class="request-type">
+          <p> Request type: </p>
+          <code> GET </code>
+        </div>
+        <p> Пример описания запроса </p>
+        <code>
+          Example desc request
+        </code>
+        <p> Описание параметров запроса: </p>
+        <code>
+          some text in this area
+        </code>
+        <div class="request-type">
+          <p> Тип вывода: </p>
+          <code> JSON || None </code>
+        </div>
+        <p> Пример вывода </p>
+        <code> Example output </code>
+      </div>
+      -->
+    </div>
+  <script src="{{ url_for('static', filename='js_scripts/main_index.js' ) }}"></script>
+  </body>
+</html>

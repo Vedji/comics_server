@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Страница с таблицей</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/bd_view_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index_style.css') }}">
+</head>
+<body>
+    <div id="menu">
+        <ul>
+            <li><a href="/"> Главная </a></li>
+            <li><a href="/catalog_manga">Каталог манги</a></li>
+            <li><a href="/api_documentation">API</a></li>
+            <li><a href="#">О нас</a></li>
+            <li><a href=#> profile </a></li>
+            <li><a href="/all_bd_view"> Назад </a></li>
+        </ul>
+    </div>
+    <h1> Таблица: {{ bd_name }}</h1>
+    <button id="addButton">Добавить запись</button>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                {% for name in bd_heads %}
+                <th>{{ name }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Здесь будут отображаться данные из таблицы -->
+        </tbody>
+    </table>
+
+    <div id="popupForm" class="hidden">
+        <h2>Добавить запись</h2>
+        <form id="dataForm">
+            {% for item in bd_heads %}
+                <label for="{{item}}">{{item}}:</label>
+                <input type="text" id="{{item}}" name="{{item}}" required><br>
+            {% endfor %}
+            <input type="submit" value="Добавить">
+        </form>
+    </div>
+    <script src="{{ url_for('static', filename='js_scripts/bd_view_script.js') }}"></script>
+<script>
+    document.getElementById("dataForm")
+            .addEventListener("submit", function(event) {
+                alert(SCROLL_ID);
+                SCROLL_ID += 1
+                event.preventDefault();
+                var html_form = "";
+                var newRow = document.createElement("tr");
+                {% for item in bd_heads %}
+                    var {{ item }} = document.getElementById("{{ item }}").value;
+                    html_form +=  "<td>" + {{ item }} + "</td>";
+                {% endfor %}
+                newRow.innerHTML = html_form;
+
+                document.getElementById("dataTable").getElementsByTagName("tbody")[0].appendChild(newRow);
+
+                document.getElementById("popupForm").classList.add("hidden");
+        });
+</script>
+</body>
+</html>

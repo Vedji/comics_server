@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+  <title>Произведение</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index_style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/manga_view_info.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/seekBar.css') }}">
+</head>
+<body>
+  <div id="menu">
+        <ul>
+            <li><a href="/catalog_manga">Каталог манги</a></li>
+            <li><a href="/api_documentation">API</a></li>
+            <li><a href="#">О нас</a></li>
+            <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
+        </ul>
+    </div>
+  <div class="content">
+    <div class="sidebar">
+        <h2 id="manga_name">Название произведения</h2>
+        <img class="title-image" src="/api/get_file?file_id=1" alt="Заголовочное изображение" id="manga_title_image">
+        <div class="sidebar-buttons">
+            <button id="user-like-manga-button"> &#128159; </button> <!-- like button -->
+            <button class="menu-button" data-target="description">Описание</button>
+            <button class="menu-button" data-target="chapters">Главы произведения</button>
+            <button class="menu-button" data-target="comments">Комментарии</button>
+        </div>
+    </div>
+    <div class="main">
+        <div id="description" class="description-text">
+            <h2>Описание произведения</h2>
+            <p id="manga_description">Описание произведения...</p>
+        </div>
+      <div id="chapters" class="chapters">
+          <div class="chapters-body" id="chapter-list">
+              <h2> Главы произведения </h2>
+              <!-- element chapter list
+              <div class="chapter-element" onclick="toChapter('url_to_chapter')">
+                  <a class="chapter-href" href="/"> Tom 1 Chapter 3</a>
+              </div>-->
+          </div>
+      </div>
+      <div id="comments" class="comments-form">
+        <h2>Комментарии</h2>
+        <form id="comment-form">
+          <textarea></textarea>
+            <div style="display: flex; margin-top: 25px;">
+                <div class="slidecontainer" style="margin-right: 25px;">
+                    <input type="range" min="0" max="10" value="5" class="slider" id="myRange">
+                </div>
+                <button type="submit">Отправить</button>
+            </div>
+        </form>
+        <div class="comments-list" id="comments-list">
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="{{ url_for('static', filename='js_scripts/manga_view_info.js') }}"></script>
+</body>
+</html>

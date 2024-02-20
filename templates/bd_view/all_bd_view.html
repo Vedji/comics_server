@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/bd_view_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/style_item.css') }}">
+    <title> Debug View </title>
+</head>
+<body>
+    <div id="menu">
+        <ul>
+            <li><a href="/"> Главная </a></li>
+            <li><a href="/catalog_manga">Каталог манги</a></li>
+            <li><a href="/api_documentation">API</a></li>
+            <li><a href="#">О нас</a></li>
+            <li><a href=#> profile </a></li>
+        </ul>
+    </div>
+    <h1> Список таблиц в базе данных</h1>
+    <div id="content">
+        {% for bd_name in bd_names %}
+        <div class="book">
+            <div class="book-info">
+                <h3 class="book-title"> {{ bd_name }} </h3>
+                <a class="book-link" href="/bd_view/{{ bd_name }}/">Перейти к просмотру таблицы</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
