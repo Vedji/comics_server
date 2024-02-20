@@ -37,13 +37,13 @@
 
 ### Таблица `manga`
 #### Описание полей
-| Название поля     | Тип поля     | NOT NULL | Primary key | UNIQUE |
-|:------------------|:-------------|:--------:|:-----------:|:------:|
-| manga_name        | VARCHAR(255) |          |      +      |   +    |
-| rus_manga_name    | TEXT         |    +     |             |        |
-| manga_description | TEXT         |    +     |             |        |
-| manga_title_image | TEXT         |    +     |             |        |
-| manga_types       | VARCHAR(32)  |    +     |             |        |
+| Название поля     | Тип поля     | NOT NULL | Primary key | UNIQUE | Описание                             |
+|:------------------|:-------------|:--------:|:-----------:|:------:|:-------------------------------------|
+| manga_name        | VARCHAR(255) |          |      +      |   +    | ID произведения                      |
+| rus_manga_name    | TEXT         |    +     |             |        | Название произведения                |
+| manga_description | TEXT         |    +     |             |        | Описание произведения                |
+| manga_title_image | TEXT         |    +     |             |        | ID изображения на сервере            |
+| manga_types       | VARCHAR(32)  |    +     |             |        | Жанры произведения (Не реализованно) |
 #### SQL-запрос для создание таблиц
 ```
 CREATE TABLE "manga" (
@@ -59,12 +59,12 @@ CREATE TABLE "manga" (
 ### Таблица `chapters`
 #### Описание полей
 
-| Название поля  | Тип поля     | NOT NULL | Primary key | UNIQUE |
-|:---------------|:-------------|:--------:|:-----------:|:------:|
-| manga_name     | VARCHAR(255) |    +     |      +      |   +    |
-| chapter_number | INTEGER      |    +     |      +      |   +    |
-| chapter_name   | VARCHAR(255) |    +     |             |        |
-| chapter_len    | INTEGER      |    +     |             |        |
+| Название поля  | Тип поля     | NOT NULL | Primary key | UNIQUE | Описание                 |
+|:---------------|:-------------|:--------:|:-----------:|:------:|:-------------------------|
+| manga_name     | VARCHAR(255) |    +     |      +      |   +    | ID произведения          |
+| chapter_number | INTEGER      |    +     |      +      |   +    | Номер главы произведения |
+| chapter_name   | VARCHAR(255) |    +     |             |        | Название главы           |
+| chapter_len    | INTEGER      |    +     |             |        | Кол-во страниц в главе   |
 #### SQL-запрос для создание таблиц
 ```
 CREATE TABLE chapters(
@@ -79,12 +79,12 @@ CREATE TABLE chapters(
 
 ### Таблица `pages`
 #### Описание полей
-| Название поля  | Тип поля     | NOT NULL | Primary key | Unique |
-|:---------------|:-------------|:--------:|:-----------:|:------:|
-| manga_name     | VARCHAR(255) |    +     |      +      |   +    |
-| chapter_number | INTEGER      |    +     |      +      |   +    |
-| page_number    | INTEGER      |    +     |      +      |   +    |
-| pages_image    | INTEGER      |    +     |             |        |
+| Название поля  | Тип поля     | NOT NULL | Primary key | Unique | Описание                    |
+|:---------------|:-------------|:--------:|:-----------:|:------:|:----------------------------|
+| manga_name     | VARCHAR(255) |    +     |      +      |   +    | ID произведения             |
+| chapter_number | INTEGER      |    +     |      +      |   +    | Номер главы                 |
+| page_number    | INTEGER      |    +     |      +      |   +    | Номер страницы в главе      |
+| pages_image    | INTEGER      |    +     |             |        | ID изображения для страницы |
 #### SQL-запрос для создание таблиц
 ```
 CREATE TABLE pages(
@@ -100,12 +100,12 @@ CREATE TABLE pages(
 
 ### Таблица `files`
 #### Описание полей
-| Название поля | Тип поля | NOT NULL | Primary key | UNIQUE | AUTOINCREMENT |
-|:--------------|:---------|:--------:|:-----------:|:------:|:-------------:|
-| image_id      | INTEGER  |    +     |      +      |   +    |       +       |
-| image_path    | TEXT     |    +     |             |        |               |
-| image_name    | TEXT     |    +     |             |        |               |
-| image_format  | TEXT     |    +     |             |        |               |
+| Название поля | Тип поля | NOT NULL | Primary key | UNIQUE | AUTOINCREMENT | Описание                  |
+|:--------------|:---------|:--------:|:-----------:|:------:|:-------------:|:--------------------------|
+| image_id      | INTEGER  |    +     |      +      |   +    |       +       | ID файла                  |
+| image_path    | TEXT     |    +     |             |        |               | Путь к файлу на сервере   |
+| image_name    | TEXT     |    +     |             |        |               | Название файла на сервере |
+| image_format  | TEXT     |    +     |             |        |               | Формат изображения        |
 #### SQL-запрос для создание таблиц
 ```
 CREATE TABLE files (
@@ -118,12 +118,12 @@ CREATE TABLE files (
 
 ### Таблица `users`
 #### Описание полей
-| Название поля | Тип поля | NOT NULL | DEFAULT | Primary key | UNIQUE | AUTOINCREMENT |
-|:--------------|:---------|:--------:|:-------:|:-----------:|:------:|:-------------:|
-| user_id       | INTEGER  |    +     |         |      +      |   +    |       +       |
-| user_name     | TEXT     |    +     |         |             |   +    |               |
-| user_password | TEXT     |    +     |         |             |        |               |
-| role          | INTEGER  |          |    0    |             |        |               |
+| Название поля | Тип поля | NOT NULL | DEFAULT | Primary key | UNIQUE | AUTOINCREMENT | Описание                                      |
+|:--------------|:---------|:--------:|:-------:|:-----------:|:------:|:-------------:|:----------------------------------------------|
+| user_id       | INTEGER  |    +     |         |      +      |   +    |       +       | ID пользователя                               |
+| user_name     | TEXT     |    +     |         |             |   +    |               | Имя пользователя                              |
+| user_password | TEXT     |    +     |         |             |        |               | Пароль пользователя                           |
+| role          | INTEGER  |          |    0    |             |        |               | Роль пользователя в системе (Не реализованно) |
 #### SQL-запрос для создание таблиц
 ```
 CREATE TABLE "users" (
@@ -137,12 +137,12 @@ CREATE TABLE "users" (
 
 ### Таблица `comments`
 #### Описание полей
-| Название поля | Тип поля     | NOT NULL |        IF         | Primary key | UNIQUE |
-|:--------------|:-------------|:--------:|:-----------------:|:-----------:|--------|
-| user_id       | INTEGER      |          |                   |      +      | +      |
-| manga_name    | VARCHAR(255) |          |                   |      +      | +      |
-| manga_rating  | INTEGER      |    +     | x >= 0 && x <= 10 |             |        |
-| comment       | TEXT         |          |                   |             |        |
+| Название поля | Тип поля     | NOT NULL |        IF         | Primary key | UNIQUE | Описание                                |
+|:--------------|:-------------|:--------:|:-----------------:|:-----------:|--------|:----------------------------------------|
+| user_id       | INTEGER      |          |                   |      +      | +      | ID пользователя                         |
+| manga_name    | VARCHAR(255) |          |                   |      +      | +      | ID произведения                         |
+| manga_rating  | INTEGER      |    +     | x >= 0 && x <= 10 |             |        | Оценка произведения по 10-бальной шкале |
+| comment       | TEXT         |          |                   |             |        | Тело комментария, примечание            |
 #### SQL-запрос для создание таблиц
 ```
 CREATE TABLE comments(
