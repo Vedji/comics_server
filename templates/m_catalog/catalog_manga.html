@@ -16,17 +16,25 @@
     </ul>
   </div>
   <main>
-    <div id="catalog-manga">
-        <!-- example element in catalog manga
-        <div class="catalog-manga-content">
-            <a href="/" class="catalog-manga-content-a"> Title name example </a>
+      <div class="content-body">
+          <div class="filter-genre-body">
+              <h4> Фильтр жанров</h4>
+              <div id="filter-genre-container"></div>
+              <button id="set-filters-button"> Отфильтровать </button>
+          </div>
+          <div id="catalog-manga">
+              <!-- example element in catalog manga
+              <div class="catalog-manga-content">
+                <a href="/" class="catalog-manga-content-a"> Title name example </a>
                 <div class="catalog-manga-body">
                     <img src="{{ url_for('static', filename='default_image.png') }}" alt="Image.jpg">
                     <p> Manga description...some length manga description </p>
                 </div>
+              </div>
+              -->
         </div>
-        -->
-    </div>
+      </div>
+
   </main>
   <script src="{{ url_for('static', filename='js_scripts/main_index.js') }}"></script>
   <script src="{{ url_for('static', filename='js_scripts/manga_catalog.js') }}"></script>
