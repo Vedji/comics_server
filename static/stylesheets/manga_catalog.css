@@ -39,12 +39,33 @@ main{
     margin-bottom: 5px;
     font-size: 18px;
     color: #DFB562;
-
+}
+.content-body{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+.filter-genre-body{
+    background: #5F7CC0;
+    margin-right: 25px;
+    margin-left: 25px;
+    margin-top: 25px;
+    width: 15%;
+    border-radius: 6px;
+    padding: 5px;
+    height: min-content;
 }
 .catalog-manga-content-a:hover{
     text-decoration: underline;
     color: #8F743F;
-
+}
+#set-filters-button{
+    background: #3D3163;
+    width: 100%;
+    padding: 8px 5px;
+    margin-top: 10px;
+    margin-right: 0;
+    border-radius: 6px;
 }
 .catalog-manga-body{
     display: flex;
