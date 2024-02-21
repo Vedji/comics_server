@@ -378,13 +378,29 @@ class BDConnect:
             map(lambda x: x[1], BDConnect.sql_command(bd_connection, f"PRAGMA table_info('{table_name}');")))
         sql_command = f"SELECT * FROM {table_name} LIMIT {limit} OFFSET {offset}"
         data = BDConnect.sql_command(bd_connection, sql_command)
-        # print(heads)
-        # print(data)
         result = {
             "header_list": list(heads),
             "data_list": []
         }
         for i in data:
+            result["data_list"].append(
+                {heads[index]: i[index] for index in range(len(heads))}
+            )
+        return result
+
+    @staticmethod
+    def get_catalog_manga(bd_connection: sqlite3.Connection, offset: int, limit: int, template: str = None):
+        heads = tuple(
+            map(lambda x: x[1], BDConnect.sql_command(bd_connection, f"PRAGMA table_info('manga');")))
+        if template is None:
+            sql_command = f"SELECT * FROM manga LIMIT {limit} OFFSET {offset}"
+        else:
+            sql_command = f"SELECT * FROM manga WHERE manga_types LIKE '{template}' LIMIT {limit} OFFSET {offset};"
+        result = {
+            "header_list": list(heads),
+            "data_list": []
+        }
+        for i in BDConnect.sql_command(bd_connection, sql_command):
             result["data_list"].append(
                 {heads[index]: i[index] for index in range(len(heads))}
             )

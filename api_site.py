@@ -3,6 +3,16 @@ from flask import request, jsonify, send_file
 import bd_connect
 
 
+def get_manga_genre(line: str):
+    genres = [
+        "Романтика", "Драма", "Комедия", "Фэнтези", "Приключения", "Повседневность", "Киберпанк", "Психологическое",
+        "Космос", "Магия", "Фантастика", "Пост-апокалипсис", "Боевик", "Меха", "Сверхъестественное", "Детектив"
+    ]
+    if len(line) != len(genres):
+        return ["Error"]
+    return list(filter(lambda x: x is not None, [genres[i] if line[i] == "1" else None for i in range(len(line))]))
+
+
 def init_site_api(app: flask.app.Flask, get_db):
     @app.route("/api/bd/get_list", methods=["POST"])
     def api_bd_get():
@@ -222,3 +232,21 @@ def init_site_api(app: flask.app.Flask, get_db):
             result = data
             result["result"] = True
         return jsonify(result)
+
+    @app.route("/api/manga/get_catalog", methods=["POST"])
+    def api_manga_get_catalog():
+        """ Принимает параметры limit, offset и template, возвращает список манги по заданным параметрам """
+        if "limit" not in request.json or "offset" not in request.json:
+            return jsonify({"result": False})
+        if "template" not in request.json:
+            result = bd_connect.BDConnect.get_catalog_manga(
+                get_db(), request.json["offset"], request.json["limit"])
+        else:
+            result = bd_connect.BDConnect.get_catalog_manga(
+                get_db(), request.json["offset"], request.json["limit"], request.json["template"])
+        result["result"] = True
+        return jsonify(result)
+
+
+
+
