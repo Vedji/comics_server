@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> Add manga page</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index_style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/admin_tools.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/templates.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/editor_add_chapter.css') }}">
+</head>
+<body>
+  <div id="menu">
+    <ul>
+      <li><a href="/catalog_manga">Каталог манги</a></li>
+      <li><a href="/api_documentation">API</a></li>
+      <li><a href="#">О нас</a></li>
+      <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
+    </ul>
+  </div>
+
+  <div class="input-container">
+    <form id="upload-new-work-chapter" enctype="multipart/form-data">
+      <div class="input-element">
+        <label class="field-header" for="add-work-chapter"> Введите ID произведения</label>
+        <input class="input-text-line input-field" type="text" id="add-work-chapter" name="id">
+      </div>
+      <hr>
+      <div class="input-element">
+        <label class="field-header" for="add-work-chapter-name"> Введите название главы</label>
+        <input class="input-text-line input-field" type="text" id="add-work-chapter-name" name="name">
+      </div>
+      <hr>
+      <div class="input-element">
+        <label class="field-header" for="add-work-chapter-num"> Введите номер главы в произведении</label>
+        <input type="number" min="1" value="1" class="input-text-line input-field" id="add-work-chapter-num" name="desc"></input>
+      </div>
+      <hr>
+      <div id="chapters-pages-container">
+        <!-- Example chapters page upload
+        <div class="input-element">
+          <p class="field-header"> Страница 1 </p>
+          <div class="input-element input-field">
+            <p class="field-header"> Изображение страницы </p>
+            <input class="input-text-line" type="file" name="pre_img" id="pre_file_img">
+          </div>
+          <button type="submit" class="button-element button-load-work"> Удалить </button>
+        </div>-->
+      </div>
+      <hr>
+
+      <div class="input-element">
+        <p class="field-header" id="query-msg-add-work-chapter"> Сообщение </p>
+        <button type="submit" class="button-element button-load-work" id="btn-submit-add-chapter"> Загрузить </button>
+        <button type="button" class="button-element button-load-work" id="btn-add-chapter-to-container"> Добавить страницу </button>
+      </div>
+    </form>
+
+  </div>
+  <script src="{{ url_for('static', filename='js_scripts/main_index.js' ) }}"></script>
+  <script src="{{ url_for('static', filename='js_scripts/editor_add_chapter.js' ) }}"></script>
+</body>
+</html>

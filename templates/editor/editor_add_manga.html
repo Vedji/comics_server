@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> Add manga page</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index_style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/admin_tools.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/templates.css') }}">
+</head>
+<body>
+  <div id="menu">
+    <ul>
+      <li><a href="/catalog_manga">Каталог манги</a></li>
+      <li><a href="/api_documentation">API</a></li>
+      <li><a href="#">О нас</a></li>
+      <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
+    </ul>
+  </div>
+  <div class="input-container">
+    <form id="upload-new-work" enctype="multipart/form-data">
+      <div class="input-element">
+        <label class="field-header" for="set-work-id"> Введите ID произведения</label>
+        <input class="input-text-line input-field" type="text" id="set-work-id" name="id">
+      </div>
+      <hr>
+      <div class="input-element">
+        <label class="field-header" for="set-work-name"> Введите название произведения</label>
+        <input class="input-text-line input-field" type="text" id="set-work-name" name="ru_name">
+      </div>
+      <hr>
+      <div class="input-element">
+        <label class="field-header" for="set-work-desc"> Введите описание произведения</label>
+        <textarea rows="10" cols="35" class="input-text-line input-field" id="set-work-desc" name="desc"></textarea>
+      </div>
+      <hr>
+      <div class="input-element">
+        <div>
+          <select id="input-genres-checkbox-list" multiple></select>
+        </div>
+        <!--
+        <label class="field-header" for="set-work-genre"> Выберите жанры произведения</label>
+        <input class="input-text-line input-field" type="text" id="set-work-genre" name="genre">-->
+      </div>
+      <hr>
+      <div class="input-element input-field">
+        <p class="field-header"> Прикрепите превью-изображение тайтла </p>
+        <input class="input-text-line" type="file" name="pre_img" id="pre_file_img">
+      </div>
+      <hr>
+      <div class="input-element">
+        <p class="field-header" id="query-msg-add-work"> Сообщение </p>
+        <button type="submit" class="button-element button-load-work"> Загрузить </button>
+      </div>
+    </form>
+  </div>
+  <script src="{{ url_for('static', filename='js_scripts/main_index.js' ) }}"></script>
+  <script src="{{ url_for('static', filename='js_scripts/admin_tools_add_work.js' ) }}"></script>
+</body>
+</html>
