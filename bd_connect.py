@@ -1,6 +1,9 @@
 import os
 import pprint
 import sqlite3
+from werkzeug.datastructures import FileStorage
+
+import genre_template
 
 
 class BDConnect:
@@ -240,6 +243,21 @@ class BDConnect:
         if data and data[0][1] == user_name and data[0][2] == user_password:
             return {"login_is_successful": True}
         return {"login_is_successful": False}
+
+    @staticmethod
+    def is_user_authorization(bd_connection: sqlite3.Connection, login: str, password: str) -> bool:
+        return BDConnect.get_user_login(bd_connection, login, password)["login_is_successful"]
+
+    @staticmethod
+    def get_user_permission_level(bd_connection: sqlite3.Connection, login: str, password: str):
+        if not BDConnect.is_user_authorization(bd_connection, login, password):
+            return -1
+        sql_command = f"SELECT role FROM users WHERE user_name = '{login}' and user_password = '{password}';"
+        data = BDConnect.sql_command(bd_connection, sql_command)
+        if not data:
+            return -1
+        return data[0][-1]
+
 
     @staticmethod
     def get_info_manga(bd_connection: sqlite3.Connection, manga_name: str) -> dict | None:
@@ -497,10 +515,141 @@ class BDConnect:
                 )
         return result
 
+    @staticmethod
+    def get_works_catalog(bd_connection: sqlite3.Connection, limt: int, offs: int, temp: str):
+        """ Return list of works """
+        sql_command = f"SELECT * FROM manga WHERE manga_types LIKE '{temp}' LIMIT {limt} OFFSET {offs};"
+        data = {
+            "catalog": []
+        }
+        for work in BDConnect.sql_command(bd_connection, sql_command):
+            data["catalog"].append({
+                "id": work[0],
+                "ru_name": work[1],
+                "desc": work[2],
+                "pre_img": work[3],
+                "genre": work[4]
+            })
+        return data
+
+    @staticmethod
+    def get_catalog_search(bd_connection: sqlite3.Connection, limt: int, offs: int, temp: str):
+        """ Return list of works """
+        sql_command = \
+            f"SELECT * FROM manga " \
+            f"WHERE lower(rus_manga_name) LIKE '%' || lower('{temp}') || '%' LIMIT {limt} OFFSET {offs};"
+        data = {
+            "catalog": []
+        }
+        for work in BDConnect.sql_command(bd_connection, sql_command):
+            data["catalog"].append({
+                "id": work[0],
+                "ru_name": work[1],
+                "desc": work[2],
+                "pre_img": work[3],
+                "genre": work[4]
+            })
+        return data
+
+    @staticmethod
+    def is_work_id_exists(bd_connection: sqlite3.Connection, work_id: str):
+        """ Return True if id is exists """
+        sql_command = f"SELECT manga_name FROM manga WHERE manga_name == '{work_id}';"
+        if BDConnect.sql_command(bd_connection, sql_command):
+            return True
+        return False
+
+    @staticmethod
+    def work_chapter_exists(bd_connection: sqlite3.Connection, work_id: str, chapter_num: int):
+        sql_command = f"SELECT * FROM chapters WHERE manga_name = '{work_id}' and chapter_number = '{chapter_num}';"
+        return BDConnect.sql_command(bd_connection, sql_command)
+
+    @staticmethod
+    def work_chapter_page_exists(bd_connection: sqlite3.Connection, work_id: str, c_num: int, p_num: int):
+        sql_command = f"SELECT * FROM pages " \
+                      f"WHERE manga_name = '{work_id}' and chapter_number = '{c_num}' and page_number = '{p_num}';"
+        return BDConnect.sql_command(bd_connection, sql_command)
+
+    @staticmethod
+    def _add_file(bd_connection: sqlite3.Connection, file_path: str, file_name: str,
+                  file: FileStorage, check_exists_path: bool = True):
+        """ Return id file if file added else -1 """
+        file_path = "manga/" + file_path + "/"
+        if os.path.exists(file_path + file_name) and check_exists_path:
+            return False
+        if not os.path.exists(file_path) and check_exists_path:
+            os.mkdir(file_path)
+        sql_command = f"INSERT INTO files (image_path, image_name, image_format) " \
+                      f"VALUES ('{file_path}', '{file_name}', '{file_name.split('.')[-1]}')" \
+                      f"RETURNING image_id;"
+        data = BDConnect.sql_command(bd_connection, sql_command)
+        if not data:
+            return -1
+        bd_connection.commit()
+        file.save(file_path + file_name)
+        file.close()
+        return data[0][-1]
+
+    @staticmethod
+    def add_work(
+            bd_connection: sqlite3.Connection, work_id: str, ru_name: str, desc: str, temp: str, file: FileStorage):
+        if BDConnect.is_work_id_exists(bd_connection, work_id):
+            return False
+        if not genre_template.Genre.is_english_alphabet(work_id):
+            return False
+        if file.filename.split(".")[-1] != "jpg":
+            return False
+        file_name = work_id + "_preview_image.jpg"
+        file_id = BDConnect._add_file(bd_connection, work_id, file_name, file)
+        sql_command = f"INSERT INTO manga " \
+                      f"(manga_name, rus_manga_name, manga_description, manga_title_image, manga_types)" \
+                      f"VALUES ('{work_id}', '{ru_name}', '{desc}', {file_id}, '{temp}') " \
+                      f"RETURNING manga_name;"
+        data = BDConnect.sql_command(bd_connection, sql_command)
+        if not data:
+            return False
+        bd_connection.commit()
+        return True
+
+    @staticmethod
+    def add_work_chapter(
+            bd_connection: sqlite3.Connection,
+            work_id: str,
+            chapter_name: str,
+            chapter_num: int,
+            files: list[FileStorage]
+    ):
+        files_path = "/".join([work_id, f"chapter_{chapter_num}"])
+        files_page_id = []
+        if not BDConnect.is_work_id_exists(bd_connection, work_id):
+            return False
+        if os.path.exists("manga/" + files_path):
+            return False
+        if BDConnect.work_chapter_exists(bd_connection, work_id, chapter_num):
+            return False
+        os.mkdir("manga/" + files_path)
+        for i in range(len(files)):
+            added_file = BDConnect._add_file(bd_connection, files_path, f"img_{i + 1}.jpg", files[i], False)
+            if not added_file:
+                return False
+            files_page_id.append(added_file)
+
+        for i in range(len(files_page_id)):
+            sql_command = f"INSERT INTO pages (manga_name, chapter_number, page_number, pages_image) " \
+                          f"VALUES ('{work_id}', '{chapter_num}', '{i + 1}', '{files_page_id[i]}');"
+            BDConnect.sql_command(bd_connection, sql_command)
+        sql_command = f"INSERT INTO chapters (manga_name, chapter_name, chapter_number, chapter_len) " \
+            f"VALUES ('{work_id}', '{chapter_name}', '{chapter_num}', {len(files_page_id)});"
+        BDConnect.sql_command(bd_connection, sql_command)
+        bd_connection.commit()
+        return True
+
 
 if __name__ == "__main__":
     bd = sqlite3.connect(BDConnect.BD_NAME)
-    pprint.pprint(BDConnect.get_user_comments(bd, "Veji", "1k75d45t80"))
+    # print(BDConnect.add_work_chapter(bd, "Dragon_lady", "Кофе", 1, 0, []))
+    # pprint.pprint(BDConnect._add_file(bd, "resists", "test.jpg", None))
+    # pprint.pprint(BDConnect.get_user_comments(bd, "Veji", "1k75d45t80"))
     # pprint.pprint(BDConnect.get_user_read_catalog_list(bd, "Veji", "1k75d45t80", 1, 1))
     # pprint.pprint(BDConnect.api_get_manga_comments(bd, "I_want_my_hat_back", 1, 2))
     # print(BDConnect.get_bd_page(bd, "manga", 0, 10))

@@ -1,7 +1,7 @@
 import bd_connect
 import sqlite3
 from flask import Flask, request, jsonify, render_template, send_file, g
-import api_mobile, api_site
+import api_mobile, api_site, api_works, api_resources
 import API_DESCRIPTION
 
 
@@ -18,11 +18,14 @@ def get_db():
 
 api_mobile.init_mobile_api(app, get_db)
 api_site.init_site_api(app, get_db)
+api_works.init_site_api(app, get_db)        # init works api
+api_resources.init_site_api(app, get_db)    # init resources api
 
 
 @app.route('/login')
 def web_user_login():
     return render_template("user_login.html")
+
 
 @app.route('/registration')
 def web_user_registration():
@@ -51,23 +54,7 @@ def web_info_manga(manga_name: str):
     manga_info = bd_connect.BDConnect.get_info_manga(get_db(), manga_name)
     if not manga_info:
         return f"manga: {manga_name} is not exists", 404
-    id_manga_title_image = manga_info["manga_title_image"]
-    manga_description = manga_info["manga_description"]
-    chapter_list = bd_connect.BDConnect.get_list_manga_chapters(get_db(), manga_name)
-    chapter_list = [
-        (
-            item["chapter_number"],
-            item["chapter_name"],
-            item["chapter_len"]
-        ) for item in chapter_list["list_manga_chapters"]]
-    return render_template(
-        "m_catalog/manga_view_info.html",
-        title=manga_name,
-        id_manga_title_image=id_manga_title_image,
-        manga_name=manga_name,
-        manga_description=manga_description,
-        chapter_list=chapter_list
-    )
+    return render_template("m_catalog/manga_view_info.html")
 
 
 @app.route('/catalog_manga/<manga_name>/read')
@@ -117,6 +104,15 @@ def web_api_documentation():
         "api_documentation.html",
         api_desc=API_DESCRIPTION.api_desc
     )
+
+
+@app.route('/editor_add_manga')
+def web_add_manga():
+    return render_template("editor/editor_add_manga.html")
+
+@app.route('/editor_add_chapter')
+def web_add_chapter():
+    return render_template("editor/editor_add_chapter.html")
 
 
 if __name__ == '__main__':
