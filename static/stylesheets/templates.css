@@ -1,0 +1,21 @@
+.button-element{
+    color: #FF9640;
+    background: #2A4480;
+    padding: 10px 10px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.button-element:hover{
+    background: #303E60;
+    transform: scale(1.1, 1.1);
+}
+.input-text-line{
+    min-width: 30%;
+    padding: 4px;
+    border-radius: 6px;
+    border-style: outset;
+    border-color: black;
+    margin-left: 10px;
+    font-size: 14px;
+}

@@ -1,0 +1,23 @@
+#chapters-pages-container{
+    border-style: outset;
+    border-color: wheat;
+    border-radius: 6px;
+    padding: 4px;
+    margin-bottom: 15px;
+}
+.button-del-chapter{
+    background: rgba(255, 0, 0, 0.62);
+    margin-right: 15px;
+}
+.button-del-chapter:hover{
+    background: rgb(255, 0, 0);
+}
+.input-chapter-file-content{
+    border-color: white;
+    border-bottom-style: solid;
+    padding: 6px;
+}
+.input-chapter-file-content:hover{
+    background: #3D3163;
+    border-radius: 6px;
+}
