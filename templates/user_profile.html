@@ -7,22 +7,24 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index_style.css') }}">
     </head>
     <body>
-    <div id="menu">
-        <ul>
-            <li><a href="/catalog_manga">Каталог манги</a></li>
-            <li><a href="/api_documentation">API</a></li>
-            <li><a href="#">О нас</a></li>
-            <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
-        </ul>
-    </div>
+    <!-- Head menu -->
+        <div id="menu">
+            <ul>
+                <li><a href="/catalog_manga">Каталог манги</a></li>
+                <li><a href="/api_documentation">API</a></li>
+                <li><a href="#">О нас</a></li>
+                <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
+            </ul>
+        </div>
     <div style="display: flex;">
         <aside>
           <div class="user-info">
             <h2 id="profile_menu_username"> Никнейм пользователя </h2>
             <nav>
             <ul>
-                <li><button id="profile_menu_admin_tools" type="submit" class="menu-btn" data-target="admin_tools">
-                    Инструменты админа </button></li>
+                <li id="li-profile_menu_admin_tools">
+                    <button id="profile_menu_admin_tools" type="submit" class="menu-btn" data-target="admin_tools">
+                    Инструменты </button></li>
                 <li><button id="profile_menu_read_list" type="submit" class="menu-btn" data-target="read_list">
                     Прочитанные </button></li>
                 <li><button id="profile_menu_my_comments" type="submit" class="menu-btn" data-target="my_comments">
@@ -37,17 +39,23 @@
         </aside>
         <main>
             <div id="page-user-admin-tools" class="page-user-admin-tools">
-                <h3 class="page-title"> Инструменты администратора </h3>
-                <div class="admin-tool-add-manga">
-                    <h5> Добавление манги </h5>
-                    <button class="user-read-manga-button-read"></button>
+                <div id="tools-admin-list">
+                    <h3 class="page-title"> Инструменты администратора </h3>
+                    <ul>
+                        <li><a> Удалить пользователя </a></li>
+                        <li><a> Удаление комментария</a></li>
+                    </ul>
                 </div>
-                <div class="admin-tool-add-manga-body">
-                    <p> Добавление названия манги </p>
+                <div id="tools-editor-list">
+                    <h3 class="page-title"> Инструменты редактора </h3>
+                    <ul>
+                        <li><a href="/editor_add_manga"> Добавление манги </a></li>
+                        <li><a href="/editor_add_chapter"> Добавление главы манги </a></li>
+                        <li><a href="/editor_delete_manga"> Удаление произведения </a></li>
+                    </ul>
                 </div>
-
             </div>
-            <div id="user-read-list" class="user-read-list">
+            <div id="user-like-list" class="user-like-list">
                 <h3 class="page-title"> Список прочитанных произведений </h3>
                 <!-- auto added list -->
                 <!-- example use-read-manga element
