@@ -1,8 +1,101 @@
-var __manga_name = window.location.pathname.split('/')[2];
-var userIsLogin = false;
-var SCROLL_PROGRESS_COMMENTS = 0;
-var SCROLL_ITEMS_ADD = 30;
+const __manga_name = window.location.pathname.split('/')[2];
+let SCROLL_PROGRESS_COMMENTS = 0;
+let SCROLL_ITEMS_ADD = 30;
+let user_like_button = document.getElementById("user-like-manga-button");
 
+function setImage(image_id, file_id){
+    let imageElement = document.getElementById(image_id);
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', `/api/get_file?file_id=${file_id}`, true);
+    xhr.responseType = 'blob';
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        imageElement.src = URL.createObjectURL(xhr.response);
+      }
+    };
+    xhr.send();
+}
+
+function setToPageWorkInfo(work_id) {
+    let url_work_info = `/api/v1/work/${work_id}`;
+    fetch(url_work_info).then(response => {
+        if (!response.ok) { throw new Error('Network response was not ok'); }
+        return response.json();
+    }).then(data => {
+        if (data["status"] === "success"){
+            document.getElementById("manga_name").textContent = data["data"]["ru_name"];
+            document.getElementById('manga_description').textContent = data["data"]["desc"];
+            let container_genres = document.getElementById("media-genres-list");
+            if (data["data"]["genre_headers"].length === 0){
+                container_genres.style.display = "none";
+            }
+            for (let item in data["data"]["genre_headers"]){
+                let element = document.createElement("p");
+                element.textContent = data["data"]["genre_headers"][item];
+                container_genres.appendChild(element);
+            }
+            setImage("manga_title_image", data["data"]["pre_img"]);
+        }
+    }).catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+    });
+
+    // Set user like button
+    fetch(`/api/v1/user/likes/${__manga_name}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${access_token}`
+            }
+        }).then(response => {
+            if (!response.ok){
+                user_like_button.style.display = 'none';
+            }
+            return response.json()})
+        .then(data => {
+            if (data["status"] === "success"){
+                if (data["data"]["user_like"])
+                    user_like_button.innerHTML = "&#129655;";
+                else
+                    user_like_button.innerHTML = "&#129293;";
+            }
+        }).catch(error => {
+            alert(error);
+        });
+}
+
+function setChaptersWorks(work_id) {
+    let url_work_info = `/api/v1/work/${work_id}/chapter`;
+    fetch(url_work_info).then(response => {
+        if (!response.ok) { throw new Error('Network response was not ok'); }
+        return response.json();
+    }).then(data => {
+        let chapters_container = document.getElementById("chapter-list");
+        if (data["status"] === "success"){
+            if (data["data"]["chapters_list"].length === 0){
+                let message = document.createElement("p");
+                message.textContent = "У этого произведения глав нету:(";
+                chapters_container.appendChild(message);
+            }
+            for (let i in data["data"]["chapters_list"]){
+                let chapter = document.createElement("a");
+                let chapter_url =
+                    `/catalog_manga/${__manga_name}/read?c=${data["data"]["chapters_list"][i]["chapter_number"]}&p=1`;
+                chapter.setAttribute("class", "chapter-element");
+                chapter.setAttribute("href", chapter_url);
+                chapter.textContent = data["data"]["chapters_list"][i]["chapter_name"];
+                chapters_container.appendChild(chapter);
+            }
+        }
+        if (data["status"] === "error" && data["code"] === 404){
+            let message = document.createElement("p");
+                message.textContent = data["message"];
+                chapters_container.appendChild(message);
+        }
+    }).catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+    });
+}
 
 function addComment(){
     fetch('/api/catalog/manga/comments?name='
@@ -29,149 +122,18 @@ function addComment(){
     });
 }
 
-function getCookie(name) {
-  var nameEQ = name + "=";
-  var ca = document.cookie.split(';');
-  for (var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) === ' ') {
-      c = c.substring(1, c.length);
-    }
-    if (c.indexOf(nameEQ) === 0) {
-      return c.substring(nameEQ.length, c.length);
-    }
-  }
-  return null;
-}
 
-var data = {
-    user_login: getCookie("user_login"),
-    user_password: getCookie("user_password")
-};
-
-function setImage(image_id, file_id){
-    var imageElement = document.getElementById(image_id);
-    var description = document.getElementById('description');
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/api/get_file?file_id=' + file_id, true);
-    xhr.responseType = 'blob';
-    xhr.onload = function() {
-      if (xhr.status === 200) {
-        var blob = xhr.response;
-        var url = URL.createObjectURL(blob);
-        imageElement.src = url;
-
-      }
-    };
-    xhr.send();
-}
-
-fetch("/api/catalog/manga/is_read", {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({"user_login": data.user_login,"user_password": data.user_password, "manga_name": __manga_name})
-}).then(response => response.json()).then(data => {
-    var username = document.getElementById("user_login");
-    if (data["result"]){
-        var chapters_list = document.getElementById("user-like-manga-button");
-        if (data["manga_in_user_manga_like_list"]){
-            chapters_list.innerHTML = "&#129655;";
-        }else{
-            chapters_list.innerHTML = "&#129293;";
-        }
-    }else{
-        username.href = "/login";
-    }
-}).catch(error => {
-  alert(error);
-});
-
-
-addComment();
 SCROLL_PROGRESS_COMMENTS += 1;
-fetch("/api/user/user_info", {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-}).then(response => response.json())
-.then(data => {
-    var username = document.getElementById("user_login");
-  if (data["result"]){
-    username.text = data["user_name"];
-    username.href = "/user/" + data["user_name"] + "/";
-    userIsLogin = true;
-  }else{
-    username.href = "/login";
-  }
-})
-.catch(error => {
-  alert(error);
-});
 
-fetch('/api/catalog/info?name=' + __manga_name)
-  .then(function(response) {
-    if (response.ok) {
-      return response.json();
-    }
-    throw new Error('Ошибка запроса');
-  })
-  .then(function(responseText) {
-    if (responseText["result"]){
-        setImage("manga_title_image", responseText["manga_title_image"]);
-        var manga_name = document.getElementById("manga_name");
-        var manga_decs = document.getElementById('manga_description');
-        manga_name.innerHTML = responseText["rus_manga_name"];
-        manga_decs.innerHTML = responseText["manga_description"];
-    }
-  })
-  .catch(function(error) {
-    console.log(error);
-});
+let menuButtons = document.getElementsByClassName('menu-button');
+let description = document.getElementById('description');
+let chapters = document.getElementById('chapters');
+let comments_page = document.getElementById('comments');
+let comment_form = document.getElementById('comment-form');
 
-function toChapter(url_chapter){
-    location.href = url_chapter;
-}
-
-fetch('/api/catalog/chapters?name=' + __manga_name)
-  .then(function(response) {
-    if (response.ok) {
-      return response.json();
-    }
-    throw new Error('Ошибка запроса');
-  })
-  .then(function(responseText) {
-    if (responseText["result"]){
-        let chapters_list = document.getElementById("chapter-list");
-        for (let i = 0; i < responseText["list_manga_chapters"].length; i++){
-            let url_chapter = '/catalog_manga/' + __manga_name;
-            url_chapter += '/read?c='+responseText["list_manga_chapters"][i]["chapter_number"] + '&p=1';
-            let html_item = '<div class="chapter-element" onclick="';
-            html_item += "toChapter('" + url_chapter + "')";
-            html_item += '"><a class="chapter-href"> ' + responseText["list_manga_chapters"][i]["chapter_name"] + ' </a>';
-            html_item += '</div>'
-            chapters_list.innerHTML += html_item;
-        }
-    }
-  })
-  .catch(function(error) {
-    console.log(error);
-});
-
-
-
-var menuButtons = document.getElementsByClassName('menu-button');
-var description = document.getElementById('description');
-var chapters = document.getElementById('chapters');
-var comments_page = document.getElementById('comments');
-var comment_form = document.getElementById('comment-form');
-
-for (var i = 0; i < menuButtons.length; i++) {
+for (let i = 0; i < menuButtons.length; i++) {
     menuButtons[i].addEventListener('click', function() {
-    var target = this.getAttribute('data-target');
+    let target = this.getAttribute('data-target');
     if (target === 'description') {
         description.style.display = 'block';
         chapters.style.display = 'none';
@@ -198,44 +160,41 @@ for (var i = 0; i < menuButtons.length; i++) {
       });
 }
 
-var isReadButton = document.getElementById('user-like-manga-button');
-isReadButton.addEventListener('click', function(e) {
+document.getElementById('user-like-manga-button')
+    .addEventListener('click', function(e) {
     e.preventDefault();
-    fetch("/api/catalog/manga/set_read", {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(
-    {"user_login": data.user_login,"user_password": data.user_password, "manga_name": __manga_name})})
-    .then(response => response.json()).then(data => {
-        var username = document.getElementById("user_login");
-        if (data["result"]){
-        var chapters_list = document.getElementById("user-like-manga-button");
-        if (data["manga_in_user_like_manga"]){
-            chapters_list.innerHTML = "&#129655;";
-        }else{
-            chapters_list.innerHTML = "&#129293;";
-        }
-        }else{
-            username.href = "/login";
-        }
-    }).catch(error => {
-        alert(error);
-    });
+    fetch(`/api/v1/user/likes/${__manga_name}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${access_token}`
+            },
+            body: JSON.stringify({})
+        }).then(response => {
+            if (!response.ok){
+                user_like_button.style.display = 'none';
+            }
+            return response.json()})
+        .then(data => {
+            if (data["status"] === "success"){
+                if (data["data"]["user_like"])
+                    user_like_button.innerHTML = "&#129655;";
+                else
+                    user_like_button.innerHTML = "&#129293;";
+            }
+        }).catch(error => {
+            alert(error);
+        });
 });
 
-var commentForm = document.getElementById('comment-form');
-var commentsList = document.querySelector('.comments-list');
-
-commentForm.addEventListener('submit', function(e) {
+document.getElementById('comment-form').addEventListener('submit', function(e) {
     e.preventDefault();
     var textarea = this.querySelector('textarea');
     var commentText = textarea.value;
     var commentDiv = document.createElement('div');
     commentDiv.classList.add('comment');
     commentDiv.innerHTML = '<p>' + commentText + '</p>';
-    commentsList.appendChild(commentDiv);
+    document.querySelector('.comments-list').appendChild(commentDiv);
     textarea.value = '';
 });
 
@@ -250,3 +209,7 @@ if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
     }
 }
 });
+
+
+setToPageWorkInfo(__manga_name);
+setChaptersWorks(__manga_name);

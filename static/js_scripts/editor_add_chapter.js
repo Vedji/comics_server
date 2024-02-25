@@ -1,19 +1,5 @@
 let pages_count = 0;
-let pages_img_list = [];
 
-function getCookie(name) {
-    let nameEQ = name + "=";
-    let ca = document.cookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') {
-            c = c.substring(1, c.length);
-        } if (c.indexOf(nameEQ) === 0) {
-            return c.substring(nameEQ.length, c.length);
-        }
-    }
-    return null;
-}
 function update(){
     let inp = document.getElementsByTagName("input");
     for (let i = 0; i < inp.length; i++){
@@ -103,27 +89,38 @@ document.getElementById("btn-add-chapter-to-container")
 document.getElementById("upload-new-work-chapter")
     .addEventListener("submit", function(event) {
         event.preventDefault();
-
+        let post_url = `/api/v1/work/${document.getElementById("add-work-chapter").value}/chapter`;
         let formData = new FormData();
-        formData.append("login", getCookie("user_login"));
-        formData.append("password", getCookie("user_password"));
-        formData.append("id", document.getElementById("add-work-chapter").value);
         formData.append("chapter_name", document.getElementById("add-work-chapter-name").value);
         formData.append("chapter_num", document.getElementById("add-work-chapter-num").value);
         formData.append("count_files", pages_count);
         for (let i = 0; i < pages_count; i++ ){
             formData.append(`file_${i}`, document.getElementById(`inp-page-${i}`).files[0])
         }
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/api/resources/add_work_chapter', true);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', post_url, true);
+        xhr.setRequestHeader("Authorization", `Bearer ${access_token}`);
         xhr.onload = function () {
             let msg = document.getElementById("query-msg-add-work-chapter");
             if (xhr.status === 200) {
+                msg.textContent = "Глава успешно загружена";
+                msg.style.color = "green";
+            }
+            else if (xhr.status === 400 || xhr.status === 401){
                 msg.textContent = JSON.parse(xhr.response).message;
                 msg.style.color = "red";
-            } else {
-                msg.textContent = "Произведение успешно загруженно на сайт.";
-                msg.style.color = "black";
+            }
+            else if (xhr.status === 422){
+                msg.textContent = "Для таких действий нужно войти....";
+                msg.style.color = "red";
+            }else if (xhr.status === 405){
+                msg.textContent = `[${xhr.status}]: Это же не дело, вот так добавлять главы куда попало(((`;
+                msg.style.color = "red";
+            }
+            else {
+                msg.textContent = `Неизвестная ошибка со статусом ${xhr.status}`;
+                msg.style.color = "red";
             }
         };
         xhr.send(formData);
