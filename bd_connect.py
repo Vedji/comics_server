@@ -11,9 +11,19 @@ class BDConnect:
 
     @staticmethod
     def sql_command(bd_connection: sqlite3.Connection, command: str):
+        """ Return list row from db """
         cursor = bd_connection.cursor()
         cursor.execute(command)
         data = cursor.fetchall()
+        cursor.close()
+        return data
+
+    @staticmethod
+    def sql_command_one(bd_connection: sqlite3.Connection, command: str):
+        """ Return one row from db, only for primary key """
+        cursor = bd_connection.cursor()
+        cursor.execute(command)
+        data = cursor.fetchone()
         cursor.close()
         return data
 
@@ -516,9 +526,25 @@ class BDConnect:
         return result
 
     @staticmethod
-    def get_works_catalog(bd_connection: sqlite3.Connection, limt: int, offs: int, temp: str):
+    def get_works_catalog(
+            bd_connection: sqlite3.Connection,
+            limit: int = -1, offset: int = 0, template: str = None, search_name: str = None
+    ) -> dict:
         """ Return list of works """
-        sql_command = f"SELECT * FROM manga WHERE manga_types LIKE '{temp}' LIMIT {limt} OFFSET {offs};"
+        if template is not None and search_name is not None:
+            sql_command = f"SELECT * FROM manga " \
+                          f"WHERE manga_types LIKE '{template}' " \
+                          f"and rus_manga_name LIKE '%' || lower('{search_name}') || '%' " \
+                          f"LIMIT {limit} OFFSET {offset};"
+            print(sql_command, limit)
+        elif template is not None and search_name is None:
+            sql_command = f"SELECT * FROM manga WHERE manga_types LIKE '{template}' LIMIT {limit} OFFSET {offset};"
+        elif template is None and search_name is not None:
+            sql_command = \
+                f"SELECT * FROM manga " \
+                f"WHERE lower(rus_manga_name) LIKE '%' || lower('{search_name}') || '%' LIMIT {limit} OFFSET {offset};"
+        else:
+            sql_command = f"SELECT * FROM manga LIMIT {limit} OFFSET {offset};"
         data = {
             "catalog": []
         }
@@ -644,9 +670,123 @@ class BDConnect:
         bd_connection.commit()
         return True
 
+    @staticmethod
+    def get_work(bd_connection: sqlite3.Connection, work_id: str) -> dict | None:
+        sql_command = f"SELECT * FROM manga WHERE manga_name = '{work_id}';"
+        data = BDConnect.sql_command_one(bd_connection, sql_command)
+        if data:
+            data = {
+                "work_id": data[0],
+                "ru_name": data[1],
+                "desc": data[2],
+                "pre_img": data[3],
+                "genre": data[4]
+            }
+            return data
+
+    @staticmethod
+    def get_work_chapters(bd_connection: sqlite3.Connection, work_id: str) -> list | None:
+        sql_command = f"SELECT * FROM chapters WHERE manga_name = '{work_id}';"
+        data = BDConnect.sql_command(bd_connection, sql_command)
+        if not BDConnect.get_work(bd_connection, work_id):
+            return None
+        if data:
+            for i in range(len(data)):
+                buff = {
+                    "chapter_name": data[i][1],
+                    "chapter_number": data[i][2],
+                    "number_of_pages": data[i][3]
+                }
+                data[i] = buff
+            return sorted(data, key=lambda x: x["chapter_number"])
+        return []
+
+    @staticmethod
+    def get_user_info(bd_connection: sqlite3.Connection, username: str, password: str) -> dict | None:
+        if not BDConnect.is_user_authorization(bd_connection, username, password):
+            return None
+        sql_command = f"SELECT * FROM users WHERE user_name = '{username}' and user_password = '{password}';"
+        data = BDConnect.sql_command_one(bd_connection, sql_command)
+        if data:
+            return {
+                "ID": data[0],
+                "USERNAME": data[1],
+                "ROLE": data[3]
+            }
+        return None
+
+    @staticmethod
+    def is_user_exists(bd_connection: sqlite3.Connection, user_id: int):
+        sql_command = f"SELECT * FROM users WHERE user_id = '{user_id}';"
+        data = BDConnect.sql_command_one(bd_connection, sql_command)
+        if data:
+            return {
+                "ID": data[0],
+                "USERNAME": data[1],
+                "ROLE": data[3]
+            }
+        return None
+
+    @staticmethod
+    def get_user_likes_catalog(
+            bd_connection: sqlite3.Connection, user_id: int, limit: int = -1, offset: int = 0) -> list | None:
+        if not BDConnect.is_user_exists(bd_connection, user_id):
+            return None
+        sql_command = f"SELECT * FROM user_likes_catalog WHERE user_id = '{user_id}' LIMIT {limit} OFFSET {offset};"
+        data = BDConnect.sql_command(bd_connection, sql_command)
+        for i in range(len(data)):
+            data[i] = BDConnect.get_work(bd_connection, data[i][1])
+        return data
+
+    @staticmethod
+    def is_user_like_work(bd_connection: sqlite3.Connection, user_id: int, work_id: str):
+        if not BDConnect.is_user_exists(bd_connection, user_id):
+            return None
+        if not BDConnect.is_work_id_exists(bd_connection, work_id):
+            return None
+        sql_command = f"SELECT * FROM user_likes_catalog WHERE  user_id = '{user_id}' and manga_name = '{work_id}';"
+        data = BDConnect.sql_command_one(bd_connection, sql_command)
+        return data is not None
+
+    @staticmethod
+    def set_user_like_work(bd_connection: sqlite3.Connection, user_id: int, work_id: str):
+        res = False
+        if not BDConnect.is_user_exists(bd_connection, user_id):
+            return None
+        if not BDConnect.is_work_id_exists(bd_connection, work_id):
+            return None
+        if BDConnect.is_user_like_work(bd_connection, user_id, work_id):
+            sql_command = f"DELETE FROM user_likes_catalog WHERE user_id = '{user_id}' and manga_name = '{work_id}';"
+        else:
+            sql_command = f"INSERT INTO user_likes_catalog (user_id, manga_name) VALUES ({user_id}, '{work_id}');"
+            res = True
+        BDConnect.sql_command(bd_connection, sql_command)
+        bd_connection.commit()
+        return res
+
+    @staticmethod
+    def get_user_comment_list(
+            bd_connection: sqlite3.Connection, user_id: int, limit: int = -1, offset: int = 0) -> list | None:
+        if not BDConnect.is_user_exists(bd_connection, user_id):
+            return None
+        sql_command = f"SELECT * FROM comments WHERE user_id = '{user_id}' LIMIT {limit} OFFSET {offset};"
+        data = BDConnect.sql_command(bd_connection, sql_command)
+        for i in range(len(data)):
+            work = BDConnect.get_work(bd_connection, data[i][1])
+            buff = {
+                "work_id": data[i][1],
+                "grade": data[i][2],
+                "comment": data[i][3],
+                "ru_name": work["ru_name"],
+                "pre_img": work["pre_img"]
+            }
+            data[i] = buff
+        return data
+
 
 if __name__ == "__main__":
     bd = sqlite3.connect(BDConnect.BD_NAME)
+    print(BDConnect.get_user_comment_list(bd, 4, 2, 2))
     # print(BDConnect.add_work_chapter(bd, "Dragon_lady", "Кофе", 1, 0, []))
     # pprint.pprint(BDConnect._add_file(bd, "resists", "test.jpg", None))
     # pprint.pprint(BDConnect.get_user_comments(bd, "Veji", "1k75d45t80"))

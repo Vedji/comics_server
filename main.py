@@ -1,12 +1,14 @@
 import bd_connect
 import sqlite3
-from flask import Flask, request, jsonify, render_template, send_file, g
-import api_mobile, api_site, api_works, api_resources
+from flask import Flask, request, render_template, g
+import api_mobile, api_site, api_resources, api_work, api_user
 import API_DESCRIPTION
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 
 
 app = Flask(__name__)
-
+app.config["JWT_SECRET_KEY"] = 'Ponkratov-Comics-server-secret-key'
+jwt = JWTManager(app)
 
 def get_db():
     """ Возвращает объект соединения с БД"""
@@ -18,8 +20,10 @@ def get_db():
 
 api_mobile.init_mobile_api(app, get_db)
 api_site.init_site_api(app, get_db)
-api_works.init_site_api(app, get_db)        # init works api
-api_resources.init_site_api(app, get_db)    # init resources api
+# api_works.init_site_api(app, get_db)          # init works api (lattest)
+api_resources.init_site_api(app, get_db)        # init resources api
+api_work.init_site_api(app, get_db)             # init work api
+api_user.init_site_api(app, get_db, jwt)        # init user api
 
 
 @app.route('/login')
