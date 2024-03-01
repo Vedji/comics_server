@@ -1,0 +1,124 @@
+html{
+    font-size: 36px;
+    font-family: Bitter, sans-serif;
+}
+#main-nav-menu{
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 1050;
+    margin: 0;
+    padding: 0;
+    right: 0;
+    top: 0;
+    box-shadow: 0 0.11rem 0.11rem 0 rgba(0, 0, 0, 0.25), 0 0.11rem 0.11rem 0 rgba(0, 0, 0, 0.25);
+    background: linear-gradient(180.00deg, rgb(213, 219, 222),rgb(158, 186, 196) 100%);
+}
+.main-nav-menu-header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100vw;
+    height: 2.5rem;
+    left: 0;
+    top: 0;
+    border: 0.17rem solid rgb(11, 72, 83);
+    background: rgb(128, 183, 192);
+}
+#main-nav-menu-close{
+    background: none;
+    border: none;
+    width: 2rem;
+    height: 2rem;
+    margin: 1rem;
+}
+#main-nav-menu-close > .main-nav-menu-icon{
+    margin: 0;
+}
+.main-nav-menu-icon{
+    width: 2rem;
+    height: 2rem;
+    margin: 1rem;
+}
+.main-nav-menu-header{
+    display: inline-flex;
+    flex-direction: row-reverse;
+    width: 100vw;
+    height: 2.5rem;
+    border: 0.17rem solid rgb(11, 72, 83);
+    border-radius: 0 0 1.25rem 0;
+    background: rgb(128, 183, 192);
+}
+#main-nav-menu>h2{
+    visibility: hidden;
+    margin-left: 4.61rem;
+    margin-top: 4rem;
+    margin-bottom: 2rem;
+    width: 13.86rem;
+    height: 2.5rem;
+    color: rgb(0, 0, 0);
+    font-size: 1.78rem;
+    font-weight: 400;
+    line-height: 2.14rem;
+    letter-spacing: 0;
+    text-align: left;
+}
+.main-nav-menu-btn-list{
+    display: inline-flex;
+    align-items: center;
+    width: 30rem;
+    height: 3.69rem;
+    margin-top: 2rem;
+    box-sizing: border-box;
+    border-bottom: 0.1111111111111111rem solid rgb(0, 0, 0);
+    border-top: 0.1111111111111111rem solid rgb(0, 0, 0);
+    background: rgb(232, 141, 137);
+}
+.main-nav-menu-a{
+    width: 24.92rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: rgb(254, 249, 239);
+    font-size: 1.78rem;
+    font-weight: 400;
+    line-height: 2.14rem;
+    letter-spacing: 0;
+    text-align: left;
+    text-decoration: none;
+}
+#header-menu{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100vw;
+    height: 2.5rem;
+    left: 0;
+    top: 0;
+    border: 0.17rem solid rgb(11, 72, 83);
+    background: rgb(128, 183, 192);
+}
+#header-menu-open{
+    margin: 1rem;
+    background: none;
+    border: none;
+}
+#header-menu-title{
+    width: 7.39rem;
+    left: 22.61rem;
+    right: 0;
+    top: 0;
+    bottom: 1.25rem;
+    color: rgb(255, 255, 255);
+    font-family: Inter, sans-serif;
+    font-size: 1.78rem;
+    font-weight: 400;
+    line-height: 2.14rem;
+    letter-spacing: 0;
+    text-align: left;
+    margin: 1rem;
+    height: 90%;
+}

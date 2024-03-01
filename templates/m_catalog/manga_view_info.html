@@ -1,62 +1,205 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-  <title>Произведение</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index_style.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/manga_view_info.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/seekBar.css') }}">
-</head>
-<body>
-  <div id="menu">
-        <ul>
-            <li><a href="/catalog_manga">Каталог манги</a></li>
-            <li><a href="/api_documentation">API</a></li>
-            <li><a href="#">О нас</a></li>
-            <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
-        </ul>
-    </div>
-  <div class="content">
-    <div class="sidebar">
-        <h2 id="manga_name">Название произведения</h2>
-        <img class="title-image" src="/api/get_file?file_id=1" alt="Заголовочное изображение" id="manga_title_image">
-        <div class="sidebar-buttons">
-            <button id="user-like-manga-button"> &#128159; </button> <!-- like button -->
-            <button class="menu-button" data-target="description">Описание</button>
-            <button class="menu-button" data-target="chapters">Главы произведения</button>
-            <button class="menu-button" data-target="comments">Комментарии</button>
+<html xmlns="http://www.w3.org/1999/html">
+    <head>
+        <meta charset="UTF-8">
+        <title> Work info </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index_style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/manga_view_info.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/seekBar.css') }}">
+    </head>
+    <body>
+        <div id="menu">
+            <ul>
+                <li><a href="/catalog_manga">Каталог манги</a></li>
+                <li><a href="/api_documentation">API</a></li>
+                <li><a href="#">О нас</a></li>
+                <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
+            </ul>
         </div>
-    </div>
-    <div class="main">
-        <div id="description" class="description-text">
-            <h2>Описание произведения</h2>
-            <p id="manga_description">Описание произведения...</p>
-        </div>
-      <div id="chapters" class="chapters">
-          <div class="chapters-body" id="chapter-list">
-              <h2> Главы произведения </h2>
-              <!-- element chapter list
-              <div class="chapter-element" onclick="toChapter('url_to_chapter')">
-                  <a class="chapter-href" href="/"> Tom 1 Chapter 3</a>
-              </div>-->
-          </div>
-      </div>
-      <div id="comments" class="comments-form">
-        <h2>Комментарии</h2>
-        <form id="comment-form">
-          <textarea></textarea>
-            <div style="display: flex; margin-top: 25px;">
-                <div class="slidecontainer" style="margin-right: 25px;">
-                    <input type="range" min="0" max="10" value="5" class="slider" id="myRange">
+        <script src="{{ url_for('static', filename='js_scripts/main_index.js') }}"></script>
+        <!-- Main content container  -->
+        <div class="main-container">
+            <!-- Sidebar (left menu) -->
+            <div class="sidebar">
+                <h2 id="manga_name">Название произведения</h2>
+                <img
+                        class="title-image"
+                        src="/api/get_file?file_id=1"
+                        alt="Заголовочное изображение" id="manga_title_image"
+                >
+                <div class="work-like">
+                    <button id="user-like-manga-button"> &#128159; </button> <!-- like button -->
+                    <p id="work-like-rating"> 7.9 </p>
                 </div>
-                <button type="submit">Отправить</button>
+                <div class="sidebar-buttons">
+                    <button class="menu-button" data-target="description">Описание</button>
+                    <button class="menu-button" data-target="chapters">Главы произведения</button>
+                    <button class="menu-button" data-target="comments">Комментарии</button>
+                    <button class="menu-button" data-target="tools" id="tools-btn-menu"> Инструменты </button>
+                </div>
             </div>
-        </form>
-        <div class="comments-list" id="comments-list">
+            <!-- Main page content -->
+            <div class="page-container">
+                <!-- Page container with work-description -->
+                <div id="description" class="description-text">
+                    <div>
+                        <h2>Описание произведения</h2>
+                        <p id="manga_description">Описание произведения...</p>
+                        <div id="media-genres-list"></div>
+                    </div>
+                </div>
+                <!-- Page container with work-pages -->
+                <!-- Example elements work-page
+                    <div class="chapter-element" onclick="toChapter('url_to_chapter')">
+                        <a class="chapter-href" href="/"> Tom 1 Chapter 3</a>
+                    </div>
+                -->
+                <div id="chapters" class="chapters">
+                    <div>
+                        <h2> Главы произведения </h2>
+                        <div class="chapters-elements-list" id="chapter-list"></div>
+                    </div>
+                </div>
+                <!-- page container with edit user comment -->
+                <div id="edit-comment-container" class="comments">
+                    <form id="edit-comment-form">
+                        <div class="add-comment-container">
+                            <div class="comment-head">
+                                <h2> Изменить комментарий </h2>
+                            </div>
+                            <div class="comment-body">
+                                <div class="comment-body-text-input">
+                                    <div>
+                                        <label>
+                                            <textarea id="edit-comment-container-text" placeholder="Введите свой комментарий:З"></textarea>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="comment-body-range-input">
+                                    <input type="range" min="0" max="10" value="5" class="slider" id="editMyRangeValue">
+                                    <p id="showEditMyRangeValue"> Оценка: 5 </p>
+                                </div>
+                                <div class="comment-body-button-input">
+                                    <button type="button" id="btn-cancel-edit-user-comment"> Отменить </button>
+                                    <button type="submit"> Сохранить </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- Page container with user work comment -->
+                <div id="user-comment-container">
+                    <div class="user-comment" >
+                        <div class="user-comment-head">
+                            <h2 > Мой комментарий </h2>
+                            <p id="user-comment-range"> Оценка: 10 </p>
+                        </div>
+                        <p id="user-comment-text"> Тут будет текст комментария </p>
+                        <div class="user-comment-body">
+                            <button class="temp-button" type="button" id="to-edit-user-comment"> Редактировать </button>
+                            <button class="temp-button user-comment-btn-del" id="user-comment-container-btn-del"
+                            > Удалить </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Page container with add comment field -->
+                <div id="add-comment" class="comments">
+                    <form id="comment-form">
+                        <div class="add-comment-container">
+                            <div class="comment-head">
+                                <h2> Оставить комментарий </h2>
+                            </div>
+                            <div class="comment-body">
+                                <div class="comment-body-text-input">
+                                    <div>
+                                        <label>
+                                            <textarea id="add-comment-input-text"
+                                                      placeholder="Введите свой комментарий:З"></textarea>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="comment-body-range-input">
+                                    <input type="range" min="0" max="10" value="5" class="slider" id="myRange">
+                                    <p id="myRangeValue"> Оценка: 5 </p>
+                                </div>
+                                <div class="comment-body-button-input">
+                                    <button type="submit">Отправить</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- Page container with work-comments list -->
+                <div id="comments-list">
+                    <div class="add-comment-head" id="comments-list-body">
+                        <h2 class="add-comment-head-text"> Комментарии </h2>
+                        <div class="comments-list-body">
+                            <div class="comments-list-body-element-head">
+                                <h3> Чей то комментарий </h3>
+                                <p> Оценка 5</p>
+                            </div>
+                            <div class="comments-list-body-text">
+                                <p> Текст комментария тут много текста</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Page add chapter to work -->
+                <div id="tools-add-chapter-page">
+                    <div id="tools-add-chapter-page-container">
+                        <h2> Инструменты: Добавить главу </h2>
+                        <form id="tools-add-chapter-page-container-form-data">
+                            <div id="tools-add-chapter-page-container-form">
+                                <div>
+                                    <p> Название главы (Необязательно)</p>
+                                    <label for="tools-add-chapter-page-container-form-name"></label>
+                                    <input type="text" id="tools-add-chapter-page-container-form-name">
+                                </div>
+                                <div>
+                                    <p> Номер главы </p>
+                                    <label for="tools-add-chapter-page-container-form-num"></label>
+                                    <input type="number" min="1" value="1" id="tools-add-chapter-page-container-form-num">
+                                </div>
+                                <div>
+                                    <p> Выберите файлы </p>
+                                    <input
+                                            type="file"
+                                            id="tools-add-chapter-page-container-form-files"
+                                            multiple accept=".jpg"
+                                    >
+                                </div>
+                                <div id="tools-add-chapter-page-container-files-show">
+                                    <div><ul id="tools-add-chapter-page-container-files-show-dad-list"></ul></div>
+                                </div>
+                                <div>
+                                    <p id="tools-add-chapter-page-msg"> </p>
+                                    <button type="submit"> Загрузить </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- Page delete work (only admin) -->
+                <div id="tools-del-work">
+                    <div>
+                        <h2> Инструменты: Удалить произведение </h2>
+                        <div id="tools-del-work-body">
+                            <form id="tools-del-work-form">
+                                <button class="user-comment-btn-del" id="tools-del-work-body-btn-del" type="submit"> Удалить произведение </button>
+                                <button
+                                        type="checkbox"
+                                        id="tools-del-work-body-btn-del-check"
+                                        name="del-check"
+                                        data-checked="false">
+                                </button>
+                                <label htmlfor="tools-del-work-body-btn-del-check"> Точно?( </label>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
-<script src="{{ url_for('static', filename='js_scripts/manga_view_info.js') }}"></script>
-</body>
+
+        <script src="{{ url_for('static', filename='js_scripts/manga_view_info.js') }}"></script>
+    </body>
 </html>

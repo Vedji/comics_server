@@ -24,7 +24,9 @@ document.getElementById("loginForm")
         }).then(response => response.json()).then(data => {
             if (data["status"] === "success"){
                 setCookie("access_token", data["data"]["access_token"], 7);
-                console.log("access_token ", data);
+                setCookie("user_id", data["data"]["ID"]);
+                setCookie("username", data["data"]["USERNAME"]);
+                setCookie("user_role", data["data"]["USER_ROLE"]);
                 location.href = "/";
             }
         }).catch(error => {

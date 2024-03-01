@@ -7,16 +7,29 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/manga_catalog.css') }}">
 </head>
 <body>
-  <div id="menu">
-    <ul>
-      <li><a href="/catalog_manga">Каталог манги</a></li>
-      <li><a href="/api_documentation">API</a></li>
-      <li><a href="#">О нас</a></li>
-      <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
-    </ul>
-  </div>
-  <main>
-      <div class="content-body">
+    <div id="catalog-works-search">
+        <div style="margin: 0">
+            <div id="catalog-works-search-input">
+                <input type="text" id="searchInput" placeholder="Поиск...">
+                <p id="catalog-works-search-close">&#10060;</p>
+            </div>
+                <div class="catalog-works-search-body">
+                    <div id="catalog-works-search-output"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div id="menu">
+            <ul>
+                <li><a href="/catalog_manga">Каталог манги</a></li>
+                <li><a href="/api_documentation">API</a></li>
+                <li><a href="#">О нас</a></li>
+                <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
+                <li id="search-button">&#128270; Поиск</li>
+            </ul>
+        </div>
+        <div class="content-body">
           <div class="filter-genre-body">
               <h4> Фильтр жанров</h4>
               <div id="filter-genre-container"></div>
@@ -34,8 +47,7 @@
               -->
         </div>
       </div>
-
-  </main>
+    </div>
   <script src="{{ url_for('static', filename='js_scripts/main_index.js') }}"></script>
   <script src="{{ url_for('static', filename='js_scripts/manga_catalog.js') }}"></script>
 </body>

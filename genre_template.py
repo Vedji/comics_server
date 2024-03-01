@@ -1,8 +1,17 @@
 class Genre:
     genres = [
         "Романтика", "Драма", "Комедия", "Фэнтези", "Приключения", "Повседневность", "Киберпанк", "Психологическое",
-        "Космос", "Магия", "Фантастика", "Пост-апокалипсис", "Боевик", "Меха", "Сверхъестественное", "Детектив"
+        "Космос", "Магия", "Фантастика", "Пост-апокалипсис", "Боевик", "Трагедия", "Сверхъестественное", "Детектив"
     ]
+
+    @staticmethod
+    def get_genre_by_list(_genres: list[str]) -> str:
+        line = "0" * len(Genre.genres)
+        for i in _genres:
+            if i.lower() in map(lambda x: x.lower(), _genres):
+                index = Genre.genres.index(i.capitalize())
+                line = line[: index] + "1" + line[index+1:]
+        return line
 
     @staticmethod
     def get_manga_genre(line: str):
@@ -36,4 +45,6 @@ class Genre:
 
 
 if __name__ == "__main__":
-    print(Genre.get_manga_genre("0001010100001010"))
+    print(Genre.get_genre_by_list([
+        "Трагедия"
+    ]))

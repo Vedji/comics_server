@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+    <meta charset="UTF-8">
+    <title> Catalog </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/mobile/m_main_nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/mobile/m_catalog.css') }}">
+</head>
+<body>
+    <div id="main-nav-menu">
+        <div class="main-nav-menu-header">
+            <button id="main-nav-menu-close">
+                <svg class="main-nav-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+
+                    <path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"/>
+                </svg>
+            </button>
+        </div>
+        <h2 id="main-nav-menu-username"></h2>
+            <div class="main-nav-menu-btn-list">
+                <svg class="main-nav-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path d="M40 48C26.7 48 16 58.7 16 72v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V72c0-13.3-10.7-24-24-24H40zM192 64c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zM16 232v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V232c0-13.3-10.7-24-24-24H40c-13.3 0-24 10.7-24 24zM40 368c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V392c0-13.3-10.7-24-24-24H40z"/>
+                </svg>
+                <a class="main-nav-menu-a" href="/catalog_manga"> Каталог произведений </a>
+            </div>
+            <div class="main-nav-menu-btn-list">
+                <svg class="main-nav-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                    <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/>
+                </svg>
+
+                <a class="main-nav-menu-a" href="/login" id="main-nav-menu-person-account"> Личный кабинет </a>
+            </div>
+            <div class="main-nav-menu-btn-list">
+                <svg class="main-nav-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                    <path d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"/>
+                </svg>
+                <a class="main-nav-menu-a" href="/api_documentation"> API </a>
+            </div>
+            <div class="main-nav-menu-btn-list">
+                <svg class="main-nav-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512">
+                    <path d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32H96c17.7 0 32 14.3 32 32V448h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H64V256H32c-17.7 0-32-14.3-32-32z"/>
+                </svg>
+                <a class="main-nav-menu-a" href="/"> Информация </a>
+            </div>
+    </div>
+    <div id="water-menu">
+            <div class="water-menu-genres-header">
+                <h2> Фильтры </h2>
+                <button id="water-menu-genres-header-close">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="water-menu-genres-list">
+                <!-- Element to input genres
+                Genre 1 - unchecked button
+                genre 2 - checked button
+                <button class="genre-checkbox water-menu-genres-list-btn-unchecked" data-checked="0" data-genre="0"> Genre 1 </button>
+                <button class="genre-checkbox water-menu-genres-list-btn-checked" data-checked="1" data-genre="1"> Genre 2 </button>
+                -->
+            </div>
+            <div class="water-menu-genres-nav">
+                <button id="water-menu-genres-list-btn-reset"> Сбросить </button>
+                <button id="water-menu-genres-list-btn-show"> Показать </button>
+            </div>
+    </div>
+    <div id="header-menu">
+        <button id="header-menu-open">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
+        </button>
+        <h2 id="header-menu-title"> Каталог </h2>
+    </div>
+    <div class="filter-menu">
+        <button id="btn-filter-genre"> Фильтры </button>
+        <label id="filter-menu-search-label">
+            <input id="filter-menu-search-input" type="search" >
+            <button id="filter-menu-search-button">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
+            </button>
+        </label>
+    </div>
+    <div id="work-container">
+        <!-- Element to work
+        <a class="work-container-item" href="/catalog_manga/Mandy/">
+            <img src="{{ url_for('static', filename='default_image.png') }}" alt="pyk">
+            <p> Клинок рассекающий демонов </p>
+        </a>
+        -->
+    </div>
+    <script src="https://kit.fontawesome.com/479812555d.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js_scripts/mobile/m_main_nav.js') }}"></script>
+    <script src="{{ url_for('static', filename='js_scripts/mobile/m_catalog.js') }}"></script>
+</body>
+</html>

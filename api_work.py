@@ -6,6 +6,7 @@ import os
 import genre_template
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from werkzeug.datastructures import FileStorage
+import exception
 
 
 def init_site_api(app: flask.app.Flask, get_db):
@@ -16,25 +17,20 @@ def init_site_api(app: flask.app.Flask, get_db):
         """ Get a list of works """
         limit = -1
         offset = 0
-        search_name = ""
-        if request.args.get("limit"):
-            if not request.args.get("limit").isdigit():
-                return jsonify({"status": "error", "code": 400, "message": "Argument limit is not a number"}), 400
-            limit = int(request.args.get("limit"))
-        if request.args.get("offset"):
-            if not request.args.get("offset").isdigit():
-                return jsonify({"status": "error", "code": 400, "message": "Argument offset is not a number"}), 400
-            offset = int(request.args.get("offset"))
+        search_name = None
+        genre = None
+        limit, msg, _terr = exception.get_arg(request.args.get("limit"), lambda x: int(x), "limit", -1)
+        if msg["status"] == "error" and _terr is not TypeError:
+            return jsonify(msg), msg["code"]
+        offset, msg, _terr = exception.get_arg(request.args.get("offset"), lambda x: int(x), "offset", 0)
+        if msg["status"] == "error" and _terr is not TypeError:
+            return jsonify(msg), msg["code"]
         if request.args.get("genre") and len(request.args.get("genre")) > 0:
             if not Genre.check_temp(request.args.get("genre")):
                 return jsonify({"status": "error", "code": 400, "message": "Argument genre is not a correct"}), 400
             genre = request.args.get("genre")
-        else:
-            genre = None
         if request.args.get("search_name") and len(request.args.get("search_name")) > 0:
             search_name = request.args.get("search_name").replace(html_split_symbol, " ", -1)
-        else:
-            search_name = None
         return jsonify({
             "status": "success",
             "data": bd_connect.BDConnect.get_works_catalog(get_db(), limit, offset, genre, search_name)
@@ -160,3 +156,41 @@ def init_site_api(app: flask.app.Flask, get_db):
     def api_get_work_chapter_page(work_id: str, c_num: int, p_num: int) -> dict:
         """ Return info about work chapter page """
         pass
+
+    @app.route('/api/v1/work/<work_id>/comments', methods=["GET"])
+    def api_get_work_comments(work_id: str):
+        """ Return info about work chapter """
+        limit = request.args.get("limit", -1, int)
+        offset = request.args.get("offset", 0, int)
+        but_user = request.args.get("but_user_id", None, int)
+        data = bd_connect.BDConnect.get_work_comments_list(get_db(), work_id, limit, offset, but_user)
+        if data is None:
+            return jsonify({"status": "error", "code": 404, "message": f"Work {work_id} not found"}), 404
+        return jsonify({
+            "status": "success",
+            "data": data
+        }), 200
+
+    @app.route('/api/v1/work/<work_id>/rating', methods=["GET"])
+    def api_get_work_rating(work_id: str):
+        """ Return avg-rating work chapter """
+        data, msg, _terr = exception.req_fun(lambda: bd_connect.BDConnect.get_awg_rating_work(get_db(), work_id),
+                                             default=0)
+        if msg["status"] == "error":
+            return jsonify(msg), msg["code"]
+        return jsonify({
+            "status": "success",
+            "data": {
+                "rating_average": data
+            }
+        }), 200
+
+    @app.route('/api/v1/work/<work_id>', methods=["DELETE"])
+    @jwt_required()
+    def api_del_work(work_id: str):
+        user_data = get_jwt()
+        per = user_data["ROLE"]
+        if per > 2 or per < 1:
+            return jsonify({"status": "error", "code": 401, "message": "No Permission"}), 401
+        bd_connect.BDConnect.del_work(get_db(), work_id)
+        return jsonify({"status": "success", "data": {}}), 200

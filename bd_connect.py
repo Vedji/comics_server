@@ -1,8 +1,7 @@
 import os
-import pprint
 import sqlite3
 from werkzeug.datastructures import FileStorage
-
+import exception
 import genre_template
 
 
@@ -111,8 +110,8 @@ class BDConnect:
                 "manga_name": x[1],
                 "manga_rating": x[2],
                 "manga_comment": x[3]
-            }
-                                      , comments_list))
+            },
+                                      comments_list))
         }
         return comments_list
 
@@ -154,8 +153,8 @@ class BDConnect:
                 "manga_name": x[1],
                 "manga_rating": x[2],
                 "manga_comment": x[3]
-            }
-                                      , comments_list))
+            },
+                                      comments_list))
         }
         return comments_list
 
@@ -267,7 +266,6 @@ class BDConnect:
         if not data:
             return -1
         return data[0][-1]
-
 
     @staticmethod
     def get_info_manga(bd_connection: sqlite3.Connection, manga_name: str) -> dict | None:
@@ -536,17 +534,22 @@ class BDConnect:
                           f"WHERE manga_types LIKE '{template}' " \
                           f"and rus_manga_name LIKE '%' || lower('{search_name}') || '%' " \
                           f"LIMIT {limit} OFFSET {offset};"
-            print(sql_command, limit)
+            condition = f"WHERE manga_types LIKE '{template}' " \
+                        f"and rus_manga_name LIKE '%' || lower('{search_name}') || '%'"
         elif template is not None and search_name is None:
             sql_command = f"SELECT * FROM manga WHERE manga_types LIKE '{template}' LIMIT {limit} OFFSET {offset};"
+            condition = f"WHERE manga_types LIKE '{template}'"
         elif template is None and search_name is not None:
             sql_command = \
                 f"SELECT * FROM manga " \
                 f"WHERE lower(rus_manga_name) LIKE '%' || lower('{search_name}') || '%' LIMIT {limit} OFFSET {offset};"
+            condition = f"WHERE lower(rus_manga_name) LIKE '%' || lower('{search_name}') || '%'"
         else:
             sql_command = f"SELECT * FROM manga LIMIT {limit} OFFSET {offset};"
+            condition = ""
         data = {
-            "catalog": []
+            "catalog": [],
+            "pages_count": BDConnect.get_works_comment_pages_count(bd_connection, "manga", condition, limit)
         }
         for work in BDConnect.sql_command(bd_connection, sql_command):
             data["catalog"].append({
@@ -729,14 +732,16 @@ class BDConnect:
 
     @staticmethod
     def get_user_likes_catalog(
-            bd_connection: sqlite3.Connection, user_id: int, limit: int = -1, offset: int = 0) -> list | None:
+            bd_connection: sqlite3.Connection, user_id: int, limit: int = -1, offset: int = 0) -> dict | None:
         if not BDConnect.is_user_exists(bd_connection, user_id):
             return None
         sql_command = f"SELECT * FROM user_likes_catalog WHERE user_id = '{user_id}' LIMIT {limit} OFFSET {offset};"
+        count = BDConnect.get_works_comment_pages_count(
+            bd_connection, "user_likes_catalog", f"WHERE user_id = '{user_id}'", limit)
         data = BDConnect.sql_command(bd_connection, sql_command)
         for i in range(len(data)):
             data[i] = BDConnect.get_work(bd_connection, data[i][1])
-        return data
+        return {"pages_count": count, "likes_list": data}
 
     @staticmethod
     def is_user_like_work(bd_connection: sqlite3.Connection, user_id: int, work_id: str):
@@ -766,7 +771,7 @@ class BDConnect:
 
     @staticmethod
     def get_user_comment_list(
-            bd_connection: sqlite3.Connection, user_id: int, limit: int = -1, offset: int = 0) -> list | None:
+            bd_connection: sqlite3.Connection, user_id: int, limit: int = -1, offset: int = 0) -> dict | None:
         if not BDConnect.is_user_exists(bd_connection, user_id):
             return None
         sql_command = f"SELECT * FROM comments WHERE user_id = '{user_id}' LIMIT {limit} OFFSET {offset};"
@@ -781,12 +786,174 @@ class BDConnect:
                 "pre_img": work["pre_img"]
             }
             data[i] = buff
-        return data
+        return {
+            "user_comments_list": data,
+            "user_id": user_id,
+            "pages_count": BDConnect.get_works_comment_pages_count(
+                bd_connection, "comments", f"WHERE user_id = '{user_id}'", limit)
+        }
+
+    @staticmethod
+    def get_user_comment(bd_connection: sqlite3.Connection, user_id: int, work_id: str):
+        """ Return none if user is not authorization, {} - if No comment """
+        if not BDConnect.is_user_exists(bd_connection, user_id):
+            raise exception.NotExists(f"User {user_id} is not exists")
+        if not BDConnect.is_work_id_exists(bd_connection, work_id):
+            raise exception.NotExists(f"Work {work_id} is not exists")
+        sql_command = f"SELECT * FROM comments WHERE manga_name = '{work_id}' and user_id = '{user_id}';"
+        data = BDConnect.sql_command_one(bd_connection, sql_command)
+        if data:
+            return {
+                "comment_exists": True,
+                "username": BDConnect.get_username(bd_connection, data[0]),
+                "work_id": data[1],
+                "rating": data[2],
+                "comment": data[3]
+            }
+        return {"comment_exists": False}
+
+    @staticmethod
+    def get_username(bd_connection: sqlite3.Connection, user_id: str):
+        sql_command = f"SELECT user_name FROM users WHERE user_id = '{user_id}'"
+        data = BDConnect.sql_command_one(bd_connection, sql_command)
+        if data:
+            return data[0]
+
+    @staticmethod
+    def get_works_comment_pages_count(
+            bd_connection: sqlite3.Connection, table_name: str, condition: str = "", limit: int = -1):
+        sql_command = f"SELECT COUNT(*) FROM {table_name} {condition};"
+        data = BDConnect.sql_command_one(bd_connection, sql_command)
+        if data:
+            data = data[0]
+        if data is None or limit is None:
+            return 1
+        if data == 0 or limit <= 0:
+            return 1
+        if data % limit == 0:
+            return data // limit
+        return int(data / limit) + 1
+
+    @staticmethod
+    def get_work_comments_list(
+            bd_connection: sqlite3.Connection, work_id: str, limit: int, offset: int, but_user: int = None):
+        if not BDConnect.is_work_id_exists(bd_connection, work_id):
+            return None
+        if but_user is None:
+            sql_command = f"SELECT * FROM comments WHERE manga_name = '{work_id}' LIMIT {limit} OFFSET {offset};"
+            condition = f" WHERE manga_name = '{work_id}' LIMIT {limit} OFFSET {offset}"
+        else:
+            sql_command = f"SELECT * FROM comments " \
+                          f"WHERE manga_name = '{work_id}' " \
+                          f"and user_id NOT LIKE {but_user} LIMIT {limit} OFFSET {offset};"
+            condition = f" WHERE manga_name = '{work_id}' and user_id NOT LIKE {but_user}"
+        data = BDConnect.sql_command(bd_connection, sql_command)
+        for i in range(len(data)):
+            buff = {
+                "user_id": data[i][0],
+                "username": BDConnect.get_username(bd_connection, data[i][0]),
+                "rating": data[i][2],
+                "comment": data[i][3]
+            }
+            if buff["username"] is None:
+                buff["username"] = "Not found user"
+            data[i] = buff
+        return {
+            "work_id": work_id,
+            "comments-list": data,
+            "pages_count": BDConnect.get_works_comment_pages_count(bd_connection, "comments", condition, limit)
+        }
+
+    @staticmethod
+    def del_works_comment(bd_connection: sqlite3.Connection, user_id: int, work_id: str):
+        sql_command = f"DELETE FROM comments WHERE user_id = {user_id} and manga_name = '{work_id}';"
+        BDConnect.sql_command_one(bd_connection, sql_command)
+        bd_connection.commit()
+
+    @staticmethod
+    def append_works_comment(
+            bd_connection: sqlite3.Connection, user_id: int, work_id: str, rating: int, comment: str):
+        usr_comm = BDConnect.get_user_comment(bd_connection, user_id, work_id)
+        if usr_comm["comment_exists"]:
+            raise exception.AppendCollision(f"User {user_id} write comment to work: {work_id}")
+        sql_command = f"INSERT INTO comments (user_id, manga_name, manga_rating, comment) " \
+                      f"VALUES ('{user_id}', '{work_id}', '{rating}', '{comment}');"
+        BDConnect.sql_command_one(bd_connection, sql_command)
+        bd_connection.commit()
+
+    @staticmethod
+    def update_works_comment(bd_connection: sqlite3.Connection, user_id: int, work_id: str, rating: int, comment: str):
+        usr_comm = BDConnect.get_user_comment(bd_connection, user_id, work_id)
+        if not usr_comm["comment_exists"]:
+            raise exception.NotExists("Comment not created! Use POST method")
+        sql_command = f"UPDATE comments " \
+                      f"SET comment = '{comment}', manga_rating = '{rating}' " \
+                      f"WHERE user_id = '{user_id}' and manga_name = '{work_id}';"
+        BDConnect.sql_command_one(bd_connection, sql_command)
+        bd_connection.commit()
+        return True
+
+    @staticmethod
+    def get_awg_rating_work(bd_connection: sqlite3.Connection, work_id: str):
+        if not BDConnect.is_work_id_exists(bd_connection, work_id):
+            raise exception.NotExists(f"Work {work_id} is not exists")
+        sql_command = f"SELECT AVG(manga_rating) FROM comments WHERE manga_name = '{work_id}';"
+        data = BDConnect.sql_command_one(bd_connection, sql_command)[0]
+        return data if data is not None else 0
+
+    @staticmethod
+    def del_work(bd_connection: sqlite3.Connection, work_id: str):
+        """ Exception delete files from all bd """
+        sql_command = f"DELETE FROM manga WHERE manga_name = '{work_id}' RETURNING manga_title_image;"
+        title_image = BDConnect.sql_command_one(bd_connection, sql_command)
+
+        sql_command = f"DELETE FROM pages WHERE manga_name = '{work_id}' RETURNING pages_image;"
+        files_id = list(map(lambda x: x[0], BDConnect.sql_command(bd_connection, sql_command)))
+        path = []
+        for i in files_id:
+            sql_command_file = f"DELETE FROM files WHERE image_id = '{i}' RETURNING image_path, image_name;"
+            if i == title_image:
+                continue
+            file = BDConnect.sql_command_one(bd_connection, sql_command_file)
+            if os.path.exists("".join(file)):
+                os.remove("".join(file))
+            path.append(file[0])
+        sql_command = f"DELETE FROM chapters WHERE manga_name = '{work_id}';"
+        BDConnect.sql_command(bd_connection, sql_command)
+        sql_command = f"DELETE FROM comments WHERE manga_name = '{work_id}';"
+        BDConnect.sql_command(bd_connection, sql_command)
+        sql_command = f"DELETE FROM pages WHERE manga_name = '{work_id}';"
+        BDConnect.sql_command(bd_connection, sql_command)
+        sql_command = f"DELETE FROM user_likes_catalog WHERE manga_name = '{work_id}';"
+        BDConnect.sql_command(bd_connection, sql_command)
+        sql_command_file = f"DELETE FROM files WHERE image_id = '{title_image[0]}' RETURNING image_path, image_name;"
+        file = BDConnect.sql_command_one(bd_connection, sql_command_file)
+        if os.path.exists("".join(file)):
+            os.remove("".join(file))
+        for i in path:
+            if os.path.exists(i):
+                os.rmdir(i)
+        if os.path.exists(file[0]):
+            os.rmdir(file[0])
+        bd_connection.commit()
+        return True
+
+    @staticmethod
+    def user_reg(bd_connection: sqlite3.Connection, username: str, password: str):
+        sql_command = f"INSERT INTO users (user_name, user_password) " \
+                      f"VALUES ('{username}', '{password}') RETURNING user_id, user_name, role;"
+        data = BDConnect.sql_command_one(bd_connection, sql_command)
+        bd_connection.commit()
+        return {
+            "ID": data[0],
+            "USERNAME": data[1],
+            "USER_ROLE": data[2]
+        }
 
 
 if __name__ == "__main__":
     bd = sqlite3.connect(BDConnect.BD_NAME)
-    print(BDConnect.get_user_comment_list(bd, 4, 2, 2))
+    print(BDConnect.user_reg(bd, "bd_conn_2", "haha"))
     # print(BDConnect.add_work_chapter(bd, "Dragon_lady", "Кофе", 1, 0, []))
     # pprint.pprint(BDConnect._add_file(bd, "resists", "test.jpg", None))
     # pprint.pprint(BDConnect.get_user_comments(bd, "Veji", "1k75d45t80"))

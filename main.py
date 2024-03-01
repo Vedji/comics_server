@@ -45,12 +45,9 @@ def web_user_profile(user_name):
 @app.route('/index')
 @app.route('/catalog_manga')
 def web_catalog_manga():
-    manga_list = []
-    manga_name_list = bd_connect.BDConnect.get_list_manga_name(get_db(), -1, 0)
-    for i in manga_name_list["list_manga_name"]:
-        buff = bd_connect.BDConnect.get_info_manga(get_db(), i)
-        manga_list.append([buff["manga_name"], buff["manga_description"], buff["manga_title_image"]])
-    return render_template("m_catalog/catalog_manga.html", title="Home", manga_list=manga_list)
+    if "Mobile" in request.headers.get('User-Agent'):
+        return render_template("mobile/catalog/m_catalog.html")
+    return render_template("m_catalog/catalog_manga.html")
 
 
 @app.route('/catalog_manga/<manga_name>/')
@@ -58,6 +55,8 @@ def web_info_manga(manga_name: str):
     manga_info = bd_connect.BDConnect.get_info_manga(get_db(), manga_name)
     if not manga_info:
         return f"manga: {manga_name} is not exists", 404
+    if "Mobile" in request.headers.get('User-Agent'):
+        return render_template("mobile/work_view/m_section_info.html")
     return render_template("m_catalog/manga_view_info.html")
 
 

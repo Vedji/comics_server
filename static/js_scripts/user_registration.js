@@ -1,37 +1,38 @@
 function setCookie(name, value, days) {
-    var expires = "";
+    let expires = "";
     if (days) {
-        var date = new Date();
+        let date = new Date();
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         expires = "; expires=" + date.toUTCString();
     }
     document.cookie = name + "=" + value + expires + "; path=/";
 }
+
 document.getElementById("loginForm")
     .addEventListener("submit", function(event) {
-        event.preventDefault(); // Отменяем стандартное поведение формы
-        // Получаем значения полей логина и пароля
-        var username = document.getElementById("username").value;
-        var password = document.getElementById("password").value;
-        var data = {
-            user_login: username,
-            user_password: password
+        event.preventDefault();
+        let data = {
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value
         };
-        fetch("api/user/registration", {
+        fetch("/api/v1/user/registration", {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
-        }).then(response => response.json()).then(data => {
-            if (data["result"] && data["is_user_reg"]){
-                setCookie("user_login", username, 7);
-                setCookie("user_password", password, 7);
+        }).then(response => {
+            return response.json()
+        }).then(data => {
+            console.log(data)
+            if (data["status"] === "success"){
+                setCookie("access_token", data["data"]["access_token"], 7);
+                setCookie("user_id", data["data"]["ID"]);
+                setCookie("username", data["data"]["USERNAME"]);
+                setCookie("user_role", data["data"]["USER_ROLE"]);
+                location.href = "/";
                 location.href = "/user/" + username + "/";
-            }
-            if (!data["result"]){
-                alert("Input login or password!");
-            }
-            if (data["result"] && !data["is_user_reg"]){
-                alert("User login is exists or length password < 6");
+            }else if (data["status"] === "error"){
+
+                alert(data["message"]);
             }
         }).catch(error => {
             alert(error);

@@ -1,319 +1,305 @@
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
+    margin-top: 0;
+    background: #3D3163;
+    font-size: 16px;
+    font-family: "Comic Sans MS", sans-serif;
 }
-/* Стили верхней части страницы */
-header {
-  background-color: #f2f2f2;
-  padding: 10px;
-}
-
-.logo {
-  float: left;
-}
-
-.menu-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
-
-.menu-ul-li {
-  display: inline;
-  margin-right: 10px;
-}
-
-.menu-ul-li-a {
-  text-decoration: none;
-  color: #333;
-}
-
-.menu-ul-li-a:hover {
-  color: #ff0000;
-}
-
-/* Стили левой части страницы */
-aside {
-  float: left;
-  width: 15%;
-  height: 75%;
-  background-color: #00AA72;
-  margin-left: 15px;
-  margin-top: 15px;
-  margin-right: 15px;
-  border-radius: 6px;
-  padding: 10px;
-}
-body{
-    background: #4188D2;
-}
-#profile_menu_username{
-    margin-left: 40px;
-}
-.user-info h2 {
-  margin-top: 0;
-}
-
-.comments {
-  list-style-type: none;
-  padding: 0;
-}
-.menu-btn{
-    background: #04376C;
-    color: #FFFFFF;
-    width: 80%;
-    margin-bottom: 15px;
-    padding: 10px 10px;
-    border-radius: 6px;
-}
-/* Стили центральной части страницы */
-.page-title{
-    margin-top: 5px;
-    margin-left: 15px;
-}
-main {
-  float: left;
-  width: 50%;
-  height: auto;
-  padding: 10px;
-  background: #00AA72;
-  margin-top: 15px;
-  border-radius: 6px;
-}
-
-.works-list {
-  list-style-type: none;
-  padding: 0;
-}
-
-.works-list li {
-  margin-bottom: 20px;
-}
-
-.works-list img {
-  width: 100px;
-  height: auto;
-}
-
-.works-list h3 {
-  margin-top: 0;
-}
-
-.works-list a {
-  text-decoration: none;
-  color: #333;
-}
-
-.works-list button {
-  background-color: #ff0000;
-  color: #fff;
-}
-.page-user-admin-tools{ /* отвечает за отображение страницы настроек */
-    display: none;
-}
-.user-read-list{ /* отвечает за отображение списка прочитанного пользователя */
-    display: block;
-}
-.user-comment-list{ /* отвечает за отображение списка комментариев пользователя */
-    display: none;
-}
-.page-setting{ /* отвечает за отображение страницы настроек */
-    display: none;
-}
-/* Элементы, из списка прочитанного */
-.user-read-manga{
-    width: 97%;
-    height: auto;
+.main{
     display: flex;
-    justify-content: space-between;
-    background: #006363	;
-    padding: 10px 10px;
+    min-height: 100vh;
+}
+#main-content{
+    width: 60%;
+    min-height: 80vh;
+    background-color: #5F7CC0;
+    margin-top: 25px;
+    padding: 2px 2px;
     border-radius: 6px;
-    margin-bottom: 15px;
-}
-.user-read-manga-div{
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    width: 90%;
-    height: 100%;
-}
-.user-read-manga div img{
-    width: 100px;
-    height: 150px;
-    margin-right: 10px;
-    border-radius: 6px;
-}
-.user-read-manga-body{
+    border: black groove;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    background: #1D7373;
-    width: 88%;
-    padding: 5px 5px;
-    border-radius: 6px;
-    height: 140px;
-}
-.user-read-manga-body h5{
-    margin-left: 15px;
-    margin-top: 10px;
-    color: #FF9640;
-}
-.user-read-manga-body p{
-    margin-left: 15px;
-    margin-top: 0px;
-    color: #BF7130;
-}
-
-.user-read-manga-buttons{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: stretch;
-    background: #1D7373;
-    padding: 15px 15px;
-    border-radius: 6px;
-    margin-left: 15px;
-}
-
-.user-read-manga-button-read{
-    color: #FF9640;
-    background: #2A4480;
-    padding: 10px 10px;
-    margin-bottom: 5px;
-    border-radius: 6px;
-}
-.user-read-manga-button-read:hover{
-    background: #303E60;
-    transform: scale(1.2, 1.2);
-}
-
-.user-read-manga-button-del{
-    color: #FF9640;
-    background: #BA2F39;
-    padding: 10px 10px;
-    margin-bottom: 5px;
-    border-radius: 6px;
-}
-/* Элементы списка комментариев*/
-.element-comment-list{
-    background: #006363;
-    padding: 15px 15px;
-    border-radius: 6px;
-    display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    min-height: 140px;
-    height: 140px;
+}
+/* Side-bar*/
+#sidebar{
+    min-width: min-content;
+    width: 15%;
+    max-width: 15%;
+    height: fit-content;
+    background: #5F7CC0;
+    padding: 4px;
+    margin-right: 25px;
+    margin-left: 25px;
+    margin-top: 25px;
+    border-color: black;
+    border-style: outset;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.sidebar-header{
+    color: #FF9640;
+    font-size: 1.3vw;
+    margin-top: 5px;
     margin-bottom: 5px;
-    /*min-width: 560px;
-    width: 560px;*/
+    text-align: center;
 }
-.comment-title{
-    background: #1D7373;
-    padding: 15px 15px;
-    border-radius: 6px;
-    height: 80%;
-    width: 90%;
-}
-.comment-title-user{
+.sidebar-buttons{
+    min-width: min-content;
+    font-size: 1vh;
+    width: 10.6vw;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-top: -8px;
-    margin-bottom: 8px;
-    padding-top: 4px;
-    padding-left: 16px;
-    padding-right: 16px;
-    border-radius: 6px;
-}
-.comment-title-user h5{
-    margin-top: 2px;
-    background: #FFBB73;
-    padding: 5px;
-    border-radius: 6px;
-}
-.comment-title-user p{
-    background: #FFBB73;
-    padding: 5px;
-    border-radius: 6px;
-
-}
-.comment-title-user p{
-    margin-top: 2px;
-}
-.comment-body{
-    margin-top: 2px;
-    margin-left: 15px;
-    color: #000000;
-    width: 92%;
-}
-.comment-btn{
-    background: #1D7373;
-    padding: 15px 15px;
-    border-radius: 6px;
-    margin-left: 15px;
-    height: 80%;
-    display: flex;
-    flex-direction: column;
     align-items: stretch;
-    justify-content: space-around;
+    flex-direction: column;
+    margin-top: 15px;
 }
-/* user-replace-password */
-.user-replace-password{
-    margin-left: 50px;
-    margin-top: 50px;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
+.sidebar-menu-button {
+    padding: 10px 15px;
+    margin-bottom: 6px;
+    margin-top: 8px;
+    border-radius: 16px;
+    color: #FF9640;
+    background: #303E60;
+    cursor: pointer;
+}
+.sidebar-menu-button:hover{
+    background: #2A4480;
+    transform: scale(1.1, 1.1);
 }
 
-.user-replace-password div{
+
+/* Page  */
+.content-menu-main{
+    display: none;
+    width: 96%;
+    background: #3D3163;
+    padding: 4px;
+    margin-top: 15px;
+    border-radius: 6px;
+}
+.content-menu-container{
     display: flex;
     flex-direction: column;
-    min-width: 150px;
-    width: 150px;
-    background: #7DBBCF;
-    padding: 5px 5px;
+    padding: 2px;
+    margin-right: 2px;
+    background: #3D3163;
     border-radius: 6px;
-    margin-left: 15px;
+    border: black groove;
 }
-.user-replace-password input{
-    background: #FFBB73;
-    padding: 15px;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
-}
-.user-replace-password label{
-    background: #FFBB73;
-    padding: 15px;
+.content-menu-header{
+    min-width: min-content;
+    background: #6C81B0;
+    margin: 0;
+    padding: 1.2vh;
+    color: #FF9640;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
 }
-/* user admin tools */
-.admin-tool-add-manga{
-    background: #7DBBCF;
-    padding: 10px 5px;
-    border-radius: 6px;
-    margin-left: 15px;
-    margin-right: 15px;
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-}
-.admin-tool-add-manga h5{
-    margin-top: 5px;
-    margin-left: 15px;
-    background: #2A4480;
-    border-radius: 6px;
-    padding: 3px 6px 2px 5px;
-    border-color: #2d2d2d;
-    border-style: double;
-}
-.admin-tool-add-manga-body{
-    background: #1D7373;
+.content-menu-item{
+    min-width: min-content;
+    background: #6C81B0;
+    padding: 1vh;
     margin-top: 0;
+    margin-bottom: 0;
+    border-top: black groove;
+}
+.content-menu-footer{
+    display: flex;
+    flex-wrap: wrap;
+    background: #6C81B0;
+    padding: 1vh;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+/* Like items style */
+.work-like-list-header{
+    border: black groove;
+    border-bottom: none;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    overflow: hidden;
+}
+.work-like-list-header h3{
+    margin: 1em;
+}
+.work-like-list-body{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+    border: black groove;
+    border-top: none;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    margin-bottom: 1em;
+}
+.work-like-list-body-desc-name{
+    width: 100%;
+    overflow: hidden;
+}
+.work-like-list-body-desc{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    overflow: hidden;
+    width: 85%;
+    margin: 1em;
+}
+.work-like-list-body-desc-name h3{
+    margin: 1em;
+    overflow: hidden;
+    white-space: pre;
+    width: 100%;
+}
+.work-like-list-body-desc-name a{
+    text-decoration: none;
+}
+.work-like-list-body-desc-name p{
+    margin: 1em;
+    width: 100%;
+    padding: 12px;
+}
+
+.work-like-list-body img{
+    width: 5em;
+    height: 7em;
+    margin: 1em;
+    border-radius: 6px;
+    border: wheat solid;
+    padding: 0;
+}
+/* Comment items style */
+.content-menu-item textarea{
+    border-radius: 6px;
+    padding: 1em;
+    margin: 1em;
+    width: 18.5vh;
+    height: 38px;
+    max-width: 60vh;
+    min-width: 18vh;
+    border: black outset;
+}
+.comment-item-header{
+    border-top: black groove;
+    border-left: black groove;
+    border-right: black groove;
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text-decoration: none;
+}
+.comment-item-header h3{
+    margin-left: 1em;
+    cursor: pointer;
+}
+.comment-item-header a{
+    text-decoration: none;
+    color: #000000;
+}
+.comment-item-body{
+    border-left: black groove;
+    border-right: black groove;
+    margin-top: 0;
+    margin-bottom: 0;
+    display: flow-root;
+    overflow: hidden;
+}
+
+.comment-item-body p{
+    margin: 1em;
+    padding: 0;
+}
+.comment-item-footer{
+    display: flex;
+    flex-direction: row-reverse;
+    border-bottom: black groove;
+    border-left: black groove;
+    border-right: black groove;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    margin-bottom: 1em;
+}
+.comment-item-footer button{
+    margin: 1em;
+    color: white;
+    font-size: 1em;
+    background: darkred;
+}
+.comment-item-footer button:hover{
+    background: red;
+}
+#page-user-comments-list .content-menu-footer, #page-user-likes-list .content-menu-footer{
+    flex-direction: row;
+    justify-content: space-between;
+}
+.content-menu-item label{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.content-menu-item img{
+    max-width: 100px;
+    max-height: 150px;
+    width: 100px;
+    height: 150px;
+    margin-bottom: 1em;
+    border: wheat outset;
+    border-radius: 6px;
+}
+
+#page-tools-add-new-work .content-menu-footer {
+    border-top: black groove;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
+#page-tools-add-new-work .content-menu-footer p{
+    margin: 1em;
+}
+#page-tools-add-new-work-img{
+    display: none;
+}
+/* templates */
+.btn_construct{
+    margin: 1em;
+    color: #FF9640;
+    background: #303E60;
+    padding: 8px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.btn_construct:hover{
+    background: #2A4480;
+    transform: scale(1.2, 1.2);
+}
+.checkbox-input .checkbox-input-button {
+    display: inline-block;
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 10px 20px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    margin: 0.5em;
+}
+
+.checkbox-input input:checked + .checkbox-input-button {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #3e8e41;
+}
+input[type="text"]{
+    border-radius: 6px;
+    padding: 1em;
+    margin: 1em;
+}
+input[type="text"]:invalid {
+    background: red;
 }

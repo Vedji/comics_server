@@ -3,11 +3,11 @@
     <head>
         <meta charset="UTF-8">
         <title>Профиль пользователя</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/user_profile.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index_style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/user_profile.css') }}">
     </head>
     <body>
-    <!-- Head menu -->
+        <!-- Head menu -->
         <div id="menu">
             <ul>
                 <li><a href="/catalog_manga">Каталог манги</a></li>
@@ -16,110 +16,102 @@
                 <li><a id="user_login" href="/login"> Вход в аккаунт </a></li>
             </ul>
         </div>
-    <div style="display: flex;">
-        <aside>
-          <div class="user-info">
-            <h2 id="profile_menu_username"> Никнейм пользователя </h2>
-            <nav>
-            <ul>
-                <li id="li-profile_menu_admin_tools">
-                    <button id="profile_menu_admin_tools" type="submit" class="menu-btn" data-target="admin_tools">
-                    Инструменты </button></li>
-                <li><button id="profile_menu_read_list" type="submit" class="menu-btn" data-target="read_list">
-                    Прочитанные </button></li>
-                <li><button id="profile_menu_my_comments" type="submit" class="menu-btn" data-target="my_comments">
-                    Мои комментарии </button></li>
-                <li><button id="profile_menu_setting" type="submit" class="menu-btn" data-target="setting">
-                    Настройки </button></li>
-                <li><button id="profile_menu_exit" type="submit" class="menu-btn" data-target="exit">
-                    Выйти </button></li>
-            </ul>
-          </nav>
-          </div>
-        </aside>
-        <main>
-            <div id="page-user-admin-tools" class="page-user-admin-tools">
-                <div id="tools-admin-list">
-                    <h3 class="page-title"> Инструменты администратора </h3>
-                    <ul>
-                        <li><a> Удалить пользователя </a></li>
-                        <li><a> Удаление комментария</a></li>
-                    </ul>
-                </div>
-                <div id="tools-editor-list">
-                    <h3 class="page-title"> Инструменты редактора </h3>
-                    <ul>
-                        <li><a href="/editor_add_manga"> Добавление манги </a></li>
-                        <li><a href="/editor_add_chapter"> Добавление главы манги </a></li>
-                        <li><a href="/editor_delete_manga"> Удаление произведения </a></li>
-                    </ul>
+        <div class="main">
+            <div id="sidebar">
+                <h2 class="sidebar-header" id="sidebar-username"> USERNAME </h2>
+                <div class="sidebar-buttons">
+                    <button class="sidebar-menu-button" data-target="likes"> Понравилось </button>
+                    <button class="sidebar-menu-button" data-target="comments"> Комментарии</button>
+                    <button class="sidebar-menu-button" data-target="tools"> Инструменты </button>
+                    <button class="sidebar-menu-button" data-target="exit"> Выйти </button>
                 </div>
             </div>
-            <div id="user-like-list" class="user-like-list">
-                <h3 class="page-title"> Список прочитанных произведений </h3>
-                <!-- auto added list -->
-                <!-- example use-read-manga element
-                <div class="user-read-manga">
-                    <div class="user-read-manga-div">
-                        <img src="{{ url_for('static', filename='default_image.png') }}" alt="haha">
-                        <div class="user-read-manga-body">
-                            <h5> Manga_title_image </h5>
-                            <p> Manga_description_text </p>
+            <div id="main-content">
+                <!-- Page user likes list -->
+                <div class="content-menu-main" id="page-user-likes-list">
+                    <div class="content-menu-container">
+                        <h2 class="content-menu-header"> Понравилось </h2>
+                        <div class="content-menu-item" id="user-likes-list-items"></div>
+                        <div class="content-menu-footer">
+                            <button class="btn_construct" id="page-likes-last"> Назад </button>
+                            <p id="page-likes-view"> Страница [x/X] </p>
+                            <button class="btn_construct" id="page-likes-next"> Вперед </button>
                         </div>
                     </div>
-                    <div class="user-read-manga-buttons">
-                        <button class="user-read-manga-button-read"> Читать  </button>
-                        <button class="user-read-manga-button-del"> Убрать </button>
+                </div>
+                <!-- Page user comments list -->
+                <div class="content-menu-main" id="page-user-comments-list">
+                    <div class="content-menu-container">
+                        <h2 class="content-menu-header"> Мои комментарии  </h2>
+                        <div class="content-menu-item" id="comment-list-container"></div>
+                        <div class="content-menu-footer">
+                            <button class="btn_construct" id="page-comment-last"> Назад </button>
+                            <p id="page-comment-view"> Страница [x/X] </p>
+                            <button class="btn_construct" id="page-comment-next"> Вперед </button>
+                        </div>
                     </div>
                 </div>
-                -->
-            </div>
-            <div id="user-comment-list" class="user-comment-list">
-                 <h3 class="page-title"> Список комментариев пользователя </h3>
-                <!-- auto added list -->
-                <!-- example user-comments-list element
-                 <div class="element-comment-list">
-                     <div class="comment-title">
-                        <div class="comment-title-user">
-                             <h5> manga_name</h5>
-                             <h5> Username </h5>
-                             <p> [0/10] </p>
+                <!-- Page user tools -->
+                <div class="content-menu-main" id="page-tools">
+                    <div class="content-menu-container">
+                        <h2 class="content-menu-header"> Инструменты: описание  </h2>
+                        <div class="content-menu-item">
+                            <h3> Инструменты администратора </h3>
+                            <a> Удалить пользователя </a>
+                            <a> Удалить комментарий </a>
+                            <h3> Инструменты редактора </h3>
+                            <a href="#page-tools-add-new-work"> Добавить произведение </a>
+                            <a> Добавить главу </a>
+                            <a> Удалить произведение </a>
                         </div>
-                        <p class="comment-body"> This is a user comment, i dont now what is written here! </p>
-                     </div>
-                     <div class="comment-btn">
-                         <button class="user-read-manga-button-read"> К манге </button>
-                         <button class="user-read-manga-button-del"> Удалить </button>
-                     </div>
-                 </div>
-                 -->
-            </div>
-            <div id="page-setting" class="page-setting">
-                <div>
-                    <form class="user-replace-password">
-                        <div>
-                            <label for="password">Старый Пароль</label>
-                        <input type="password" id="password" name="password" required>
-                        </div>
-                        <div>
-                            <label for="password">Новый Пароль</label>
-                            <input type="password" id="new_password" name="new_password" required>
-                        </div>
-                        <div>
-                            <label for="password">Подтвердите</label>
-                            <input type="password" id="new_password_check" name="new_password_check" required>
-                        </div>
-                        <button
-                            class="user-read-manga-button-read"
-                            style="margin-left: 50px;margin-top: 50px"
-                    > Сменить пароль </button>
-                    </form>
+                        <div class="content-menu-footer"></div>
+                    </div>
+                </div>
+                <!-- Add new work -->
+                <div class="content-menu-main" id="page-tools-add-new-work" style="display: block">
+                    <div class="content-menu-container">
+                        <h2 class="content-menu-header"> Инструменты: добавить новое произведение  </h2>
+                        <form id="page-tools-add-new-work-form">
+                            <div class="content-menu-item"
+                                 style="display: flex;align-items: center;justify-content: space-between;">
+                                <p> ID произведения </p>
+                                <input id="page-tools-add-new-work-work-id"
+                                        type="text" pattern="[A-Za-z_]{3,}" title="Только буквы, минимум 3 символа">
+                            </div>
+                            <div class="content-menu-item"
+                                 style="display: flex;align-items: center;justify-content: space-between;">
+                                <p> Название произведения </p>
+                                <label>
+                                    <input type="text" id="page-tools-add-new-work-ru_name">
+                                </label>
+                            </div>
+                            <div class="content-menu-item"
+                                 style="display: flex;align-items: center;justify-content: space-between;">
+                                <p> Описанние произведения </p>
+                                <label>
+                                    <textarea id="page-tools-add-new-work-desc"></textarea>
+                                </label>
+                            </div>
+                            <div class="content-menu-item" style="display: flex;flex-wrap: wrap;"
+                                 id="page-tools-add-new-work-genres"></div>
+                            <div class="content-menu-item"
+                                 style="display: flex;align-items: center;justify-content: space-between;">
+                                <p> Превью изображение </p>
+                                <label>
+                                    <img id="page-tools-add-new-work-img" alt="Haha">
+                                    <input type="file" id="page-tools-add-new-work-file">
+                                </label>
+                            </div>
+                            <div class="content-menu-footer">
+                                <p id="page-tools-add-new-work-msg"> Message </p>
+                                <button type="submit" class="btn_construct" > Вперед </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </main>
-    </div>
-
-    <script src="{{ url_for('static', filename='js_scripts/main_index.js' ) }}"></script>
-    <script src="{{ url_for('static', filename='js_scripts/user_profile.js') }}"></script>
+        </div>
+        <script src="{{ url_for('static', filename='js_scripts/main_index.js' ) }}"></script>
+        <script src="{{ url_for('static', filename='js_scripts/user_profile.js') }}"></script>
     </body>
 </html>

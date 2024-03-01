@@ -1,7 +1,39 @@
-let USER_READ_LIST_SCROLL_PROGRESS = 0;
-let USER_READ_LIST_COUNT_LOAD = 30;
-let USER_COMMENT_LIST_SCROLL_PROGRESS = 0;
-let USER_COMMENT_LIST_COUNT_LOAD = 30;
+let urlParameters = new URLSearchParams(window.location.search);
+let page_current = 0;
+let page_count = 1;
+let comments_list_length = 0;
+let likes_list_length = 0;
+let last_section = "None";
+let user_role = 0;
+let access_token = "";
+let username = "Not AUTHORIZATION";
+try { user_role = USER_ROLE; }catch (error){ console.log("USER_ROLE's not initialization"); }
+try { access_token = ACCESS_TOKEN; }catch (error){ console.log("user not initialization, not ACCESS_TOKEN"); }
+try { username = USERNAME; }catch (error){ console.log("user not authorization, not AUTHORIZATION"); }
+// const
+let page_load_limit = 2;
+
+let sections = {
+        "likes": {
+            "permission": 0,
+            "elements": [document.getElementById("page-user-likes-list")]
+        },
+        "comments": {
+            "permission": 0,
+            "elements": [document.getElementById("page-user-comments-list")]
+        },
+        "tools": {
+            "permission": 2,
+            "elements": [
+                document.getElementById("page-tools"),
+                document.getElementById("page-tools-add-new-work")
+            ]
+        },
+        "exit": {
+            "permission": 0,
+            "elements": []
+        }
+    };
 
 function setCookie(name, value, days) {
     let expires = "";
@@ -12,68 +44,70 @@ function setCookie(name, value, days) {
     }
     document.cookie = name + "=" + value + expires + "; path=/";
 }
-
-function load_page() {
-    fetch("/api/v1/user", {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${access_token}`
-        }
-    }).then(response => response.json()).then(data => {
-        let profile_menu_username = document.getElementById("profile_menu_username");
-        if (data["status"] === "success") {
-            let btn_admin_tools = document.getElementById("li-profile_menu_admin_tools");
-            let list_admin_tools = document.getElementById("tools-admin-list");
-            btn_admin_tools.style.display = "none";
-            list_admin_tools.style.display = 'none';
-            if (data["data"]["ROLE"] > 0 && data["data"]["ROLE"] < 3) {
-                console.log("")
-                btn_admin_tools.style.display = 'block';
-                list_admin_tools.style.display = 'block';
-            }
-            profile_menu_username.textContent = data["data"]["USERNAME"];
-        }
-    }).catch(error => {
-        alert(error);
-    });
-    // Смена страниц отображения при нажатии на кнопки из меню
-    let menuButtons = document.getElementsByClassName('menu-btn');
-    for (let i = 0; i < menuButtons.length; i++) {
-        let page_admin_tools = document.getElementById('page-user-admin-tools');
-        let page_user_read_list = document.getElementById('user-like-list');
-        let page_user_comment_list = document.getElementById('user-comment-list');
-        let page_setting = document.getElementById('page-setting');
-        menuButtons[i].addEventListener('click', function () {
-            let target = this.getAttribute('data-target');
-            page_admin_tools.style.display = 'none';
-            page_user_read_list.style.display = 'none';
-            page_user_comment_list.style.display = 'none';
-            page_setting.style.display = 'none';
-            if (target === 'admin_tools') {
-                page_admin_tools.style.display = 'block';
-            } else if (target === 'read_list') {
-                page_user_read_list.style.display = 'block';
-            } else if (target === 'my_comments') {
-                page_user_comment_list.style.display = 'block';
-            } else if (target === 'setting') {
-                page_setting.style.display = 'block';
-            } else if (target === 'exit') {
-                setCookie("access_token", "", 1);
-                location.href = "";
-            }
-        });
+function menu_button(target, per= 0, reload = false){
+    if (reload || target !== last_section){
+        page_current = 0;
+        page_count = 1;
+        if (urlParameters.has("_p") && last_section !== target)
+            urlParameters.delete("_p");
     }
-}
+    last_section = target;
+    document.getElementById("sidebar-username").textContent = username;
 
-function addReadList(limit = -1, offset = 0){
+    for (let item in sections){
+        if (!sections.hasOwnProperty(item))
+            continue;
+        if (item === target && per >= sections[item]["permission"]) {
+            for (let i = 0; i < sections[item]["elements"].length; i++){
+                sections[item]["elements"][i].style.display = 'block';
+                sections[item]["elements"][i].style.background = '#2A4480';
+            }
+            continue;
+        }
+        for (let i = 0; i < sections[item]["elements"].length; i++) {
+            sections[item]["elements"][i].style.background = '#303E60';
+            sections[item]["elements"][i].style.display = 'none';
+        }
+    }
+    if (target === "comments"){
+        get_user_comment(page_load_limit, page_load_limit * page_current);
+        urlParameters.set("_section", target);
+        history.replaceState(null, null, "?" + urlParameters.toString());
+        return;
+    }
+    if (target === "likes") {
+        get_user_likes(page_load_limit, page_load_limit * page_current);
+        urlParameters.set("_section", target);
+        history.replaceState(null, null, "?" + urlParameters.toString());
+        return;
+    }
+    if (target === "tools"){
+        set_genres_to_tools_page();
+        urlParameters.set("_section", target);
+        history.replaceState(null, null, "?" + urlParameters.toString());
+        return;
+    }
+    if (target === "exit"){
+        setCookie("access_token", "", 1);
+        setCookie("user_id", "", 1);
+        setCookie("username", "", 1);
+        setCookie("user_role", "", 1);
+        location.href = "/"
+        return;
+    }
+    urlParameters.delete("_section");
+    urlParameters.delete("_p");
+    history.replaceState(null, null, "?" + urlParameters.toString());
+    location.href = "/login"
+}
+function get_user_likes(limit = -1, offset = 0) {
+    let likes_list_container = document.getElementById("user-likes-list-items");
+    likes_list_container.innerHTML = "";
     let params = {
         limit: limit,
         offset: offset
     }
-    let paramToURL = new URLSearchParams(params).toString();
-    let url = `/api/v1/user/likes?${paramToURL}`;
-    fetch(url, {
+    fetch(`/api/v1/user/likes?${(new URLSearchParams(params)).toString()}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -81,58 +115,109 @@ function addReadList(limit = -1, offset = 0){
         },
     }).then(response => response.json()).then(data => {
         if (data["status"] === "success"){
-            let user_like_list_container = document.getElementById("user-like-list");
-            for(let i = 0; i < data["data"]["likes_list"].length; i++){
-                let image_url = "/api/get_file?file_id=" + data["data"]["likes_list"][i]["pre_img"];
-
-                let user_read_manga = document.createElement("div");
-                user_read_manga.setAttribute("class", "user-like-manga");
-
-                let user_read_manga_desc = document.createElement("div");
-                user_read_manga_desc.setAttribute("class", "user-read-manga-div");
+            page_count = data["data"]["pages_count"];
+            likes_list_length = data["data"]["likes_list"].length;
+            // let view_pages = document.getElementById("page-comment-view");
+            // view_pages.textContent = `Страница [${comment_page_current+1}/${comment_page_count}]`
+            for (let i = 0; i < data["data"]["likes_list"].length; i++){
+                // container values
+                let pre_img = data["data"]["likes_list"][i]["pre_img"];
+                let work_name = data["data"]["likes_list"][i]["ru_name"];
+                let work_id = data["data"]["likes_list"][i]["work_id"];
+                let work_url = `/catalog_manga/${work_id}`;
+                let img_url = `/api/get_file?file_id=${pre_img}`;
+                // create element
+                // header
+                let header = document.createElement("div");
+                header.setAttribute("class", "work-like-list-header");
+                likes_list_container.appendChild(header);
+                // body
+                let body = document.createElement("div");
+                body.setAttribute("class", "work-like-list-body");
                 let img = document.createElement("img");
-                img.setAttribute("src", image_url)
-                img.setAttribute("alt", data["data"]["likes_list"][i]["ru_name"].toString());
-                let user_like_manga_body = document.createElement("div");
-                user_like_manga_body.setAttribute("class", "user-read-manga-body");
-                let h5 = document.createElement("h5");
-                h5.textContent = data["data"]["likes_list"][i]["ru_name"].toString();
-                let desc_p = document.createElement("p");
-                desc_p.textContent = data["data"]["likes_list"][i]["desc"].toString();
-                user_like_manga_body.appendChild(h5);
-                user_like_manga_body.appendChild(desc_p);
-                user_read_manga_desc.appendChild(user_like_manga_body);
-                user_read_manga.appendChild(user_read_manga_desc);
-
-                let user_read_manga_buttons = document.createElement("div");
-                user_read_manga_buttons.setAttribute("class", "user-read-manga-buttons");
-                let btn_1 = document.createElement("a");
-                btn_1.setAttribute("class", "user-read-manga-button-read");
-                btn_1.setAttribute(
-                    "href", `/catalog_manga/${data["data"]["likes_list"][i]["work_id"]}`)
-                btn_1.textContent = "Читать";
-                let btn_2 = document.createElement("a");
-                btn_2.setAttribute("class", "user-read-manga-button-del");
-                btn_2.textContent = "Удалить";
-                user_read_manga_buttons.appendChild(btn_1);
-                user_read_manga_buttons.appendChild(btn_2);
-                user_read_manga_desc.appendChild(user_read_manga_buttons);
-                user_like_list_container.appendChild(user_read_manga);
+                img.setAttribute("src", img_url);
+                img.setAttribute("alt", `Image not download ${work_id}`);
+                body.appendChild(img);
+                let name_container = document.createElement("div");
+                name_container.setAttribute("class", "work-like-list-body-desc-name")
+                let h3 = document.createElement("h3");
+                let a = document.createElement("a");
+                a.setAttribute("href", work_url);
+                a.textContent = work_name;
+                h3.appendChild(a);
+                name_container.appendChild(h3);
+                let p = document.createElement("p");
+                p.textContent = `ID: ${work_id}`;
+                name_container.appendChild(p);
+                body.appendChild(name_container);
+                // Button remove work
+                let btn_remove = document.createElement("button");
+                btn_remove.setAttribute("class", "btn_construct");
+                btn_remove.textContent = "Убрать";
+                btn_remove.onclick = () => { remove_like_work(work_id) };
+                body.appendChild(btn_remove);
+                likes_list_container.appendChild(body);
+                let page_show = document.getElementById("page-likes-view");
+                page_show.textContent = `Страница [${page_current+1}/${page_count}]`
             }
         }
     }).catch(error => {
         alert(error);
     });
 }
-
-function addCommentList(limit = -1, offset = 0){
+// comments
+function btn_delete_comment(work_id){
+    fetch(`/api/v1/user/comments/${work_id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${access_token}`
+        }
+    }).then(response => {
+        console.log("btn_delete_comment, code: ", response.status)
+        return response.json()
+    }).then(data => {
+        if (data["status"] === "success") {
+            if (comments_list_length - 1 === 0 && page_current !== 0)
+                page_current -= 1;
+            urlParameters.set("_section", "comments");
+            urlParameters.set("_p", page_current.toString());
+            history.replaceState(null, null, "?" + urlParameters.toString());
+            location.reload();
+        }
+    }).catch(error => console.error(error));
+}
+function remove_like_work(work_id){
+    fetch(`/api/v1/user/likes/${work_id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${access_token}`
+            },
+            body: JSON.stringify({})
+        }).then(response => {
+            return response.json()})
+        .then(data => {
+            if (data["status"] === "success"){
+                if (likes_list_length - 1 === 0 && page_current !== 0)
+                    page_current -= 1;
+                urlParameters.set("_section", "likes");
+                urlParameters.set("_p", page_current.toString());
+                history.replaceState(null, null, "?" + urlParameters.toString());
+                location.reload();
+            }
+        }).catch(error => {
+            alert(error);
+        });
+}
+function get_user_comment(limit = -1, offset = 0) {
+    let comment_list_container = document.getElementById("comment-list-container");
+    comment_list_container.innerHTML = "";
     let params = {
         limit: limit,
         offset: offset
     }
-    let paramToURL = new URLSearchParams(params).toString();
-    let url = `/api/v1/user/comments?${paramToURL}`;
-    fetch(url, {
+    fetch(`/api/v1/user/comments?${(new URLSearchParams(params)).toString()}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -140,25 +225,44 @@ function addCommentList(limit = -1, offset = 0){
         },
     }).then(response => response.json()).then(data => {
         if (data["status"] === "success"){
-            let manga_list = document.getElementById("user-comment-list");
-            for(let i = 0; i < data["data"]["user_comments_list"].length; i++){
-                let _ru_name = data["data"]["user_comments_list"][i]["ru_name"];
-                let _work_id = data["data"]["user_comments_list"][i]["work_id"];
-                let _grade = data["data"]["user_comments_list"][i]["grade"];
-                let _comment = data["data"]["user_comments_list"][i]["comment"];
-
-                let comment_item = '<div class="element-comment-list">';
-                comment_item += '<div class="comment-title"><div class="comment-title-user">';
-                comment_item += '<h5> ' + _ru_name + ' </h5>';
-                comment_item += '<p> [' + _grade + '/10] </p>';
-                comment_item += '</div><p class="comment-body"> ' + _comment + ' </p>';
-                comment_item += '</div><div class="comment-btn">';
-                comment_item += '<button onclick="btn_manga_read_list_goto(' + "'" + _work_id;
-                comment_item += "'" + ')" class="user-read-manga-button-read"> К манге </button>';
-                comment_item += '<button onclick="btn_user_comment_del(' + "'" + _work_id;
-                comment_item += "')"+ '" class="user-read-manga-button-del"> Удалить </button>';
-                comment_item += '</div></div></div>';
-                manga_list.innerHTML += comment_item;
+            page_count = data["data"]["pages_count"];
+            comments_list_length = data["data"]["user_comments_list"].length;
+            let view_pages = document.getElementById("page-comment-view");
+            view_pages.textContent = `Страница [${page_current+1}/${page_count}]`
+            for (let i = 0; i < data["data"]["user_comments_list"].length; i++){
+                // container values
+                let comment = data["data"]["user_comments_list"][i]["comment"];
+                let grade = data["data"]["user_comments_list"][i]["grade"];
+                let work_name = data["data"]["user_comments_list"][i]["ru_name"];
+                let work_id = data["data"]["user_comments_list"][i]["work_id"];
+                let work_url = `/catalog_manga/${work_id}`;
+                // create element
+                // header
+                let header = document.createElement("div");
+                header.setAttribute("class", "comment-item-header");
+                let h3 = document.createElement("h3");
+                let title_name = document.createElement("a");
+                title_name.setAttribute("href", work_url);
+                title_name.textContent = work_name.toString();
+                h3.appendChild(title_name);
+                header.appendChild(h3);
+                comment_list_container.appendChild(header);
+                // body
+                let body = document.createElement("div");
+                body.setAttribute("class", "comment-item-body");
+                let comment_text = document.createElement("p");
+                comment_text.textContent = comment;
+                body.appendChild(comment_text);
+                comment_list_container.appendChild(body);
+                // footer
+                let footer = document.createElement("div");
+                footer.setAttribute("class", "comment-item-footer");
+                let btn_del_commit = document.createElement("button");
+                btn_del_commit.setAttribute("class", "btn_construct");
+                btn_del_commit.onclick = () => {btn_delete_comment(work_id)};
+                btn_del_commit.textContent = "Delete";
+                footer.appendChild(btn_del_commit);
+                comment_list_container.appendChild(footer);
             }
         }
     }).catch(error => {
@@ -166,54 +270,171 @@ function addCommentList(limit = -1, offset = 0){
     });
 }
 
-function btn_manga_read_list_goto(manga_name){
-    location.href = "/catalog_manga/" + manga_name + "/";
-}
-
-function btn_manga_read_list_del(manga_name){
-    fetch("/api/catalog/manga/set_read", {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(
-        {
-            "user_login": user_data.user_login,
-            "user_password": user_data.user_password,
-            "manga_name": manga_name
+function set_genres_to_tools_page(){
+    fetch("/api/resources/all_work_genres").then(function(response) {
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
         }
-    )}).then(response => response.json()).then(data => {
-        if (data["result"]){
-            location.href = "/user/" + data.user_login + "/"
+        return response.json();
+    }).then(function(data) {
+        if (data["status"] === "success") {
+            let container = document.getElementById("page-tools-add-new-work-genres")
+            container.innerHTML = "";
+            for (let item in data["data"]) {
+                console.log(data["data"][item]);
+                let lbl = document.createElement("label");
+                lbl.setAttribute("class", "checkbox-input");
+                let inp = document.createElement("input");
+                inp.setAttribute("type", "checkbox");
+                inp.setAttribute("data-genre", data["data"][item]);
+                inp.setAttribute("data-genre-index", item);
+                inp.setAttribute("class", "tools-add-work-inp-genre")
+                inp.checked = false;
+                inp.hidden = true;
+                lbl.appendChild(inp);
+                let sps = document.createElement("span");
+                sps.setAttribute("class", "checkbox-input-button");
+                sps.textContent = data["data"][item];
+                lbl.appendChild(sps);
+                container.appendChild(lbl);
+            }
         }
-    }).catch(error => {
-        alert(error);
+    }).catch(function(error) {
+        console.log("There was a problem with the fetch operation: ", error.message);
     });
 }
+// load_page();
+// addReadList();
+// addCommentList();
+document.getElementById("page-tools-add-new-work-file").addEventListener("input", function () {
+    let msg = document.getElementById("page-tools-add-new-work-msg");
+    if (!this.files[0]){
+         msg.textContent = "А как?";
+         return;
+      }
+    let reader = new FileReader();
+    let img = document.getElementById("page-tools-add-new-work-img");
+    reader.onload = function (r) {
+        img.style.display = "block";
+        img.src =  r.target.result;
+    }
+    reader.readAsDataURL(this.files[0]);
+});
 
-function btn_user_comment_del(manga_name){
-    fetch("/api/user/del_comment", {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(
-        {
-            "user_login": user_data.user_login,
-            "user_password": user_data.user_password,
-            "manga_name": manga_name
+document.getElementById("page-tools-add-new-work-form")
+    .addEventListener("submit", function(event) {
+        event.preventDefault();
+        let msg = document.getElementById("page-tools-add-new-work-msg");
+        let formData = new FormData();
+        let set_work_id = document.getElementById('page-tools-add-new-work-work-id');
+        formData.append('work_id', set_work_id.value);
+        let set_work_name = document.getElementById('page-tools-add-new-work-ru_name');
+        formData.append('ru_name', set_work_name.value);
+        let set_work_desc = document.getElementById('page-tools-add-new-work-desc');
+        formData.append('desc', set_work_desc.value);
+        let genres = document.querySelectorAll(".tools-add-work-inp-genre");
+        let line_genre = Array(genres.length).fill("0");
+        for (let i = 0; i < genres.length; i++){
+            if (genres.item(i).hasAttribute("data-genre-index")){
+                if (genres.item(i).checked)
+                    line_genre[Number(genres.item(i).getAttribute("data-genre-index"))] = "1";
+                else
+                    line_genre[Number(genres.item(i).getAttribute("data-genre-index"))] = "0";
+            }
         }
-    )}).then(response => response.json()).then(data => {
-        if (data["result"]){
-            location.href = "/user/" + data.user_login + "/"
+        line_genre = line_genre.join("");
+        formData.append('genre', line_genre);
+        let fileInput = document.getElementById('page-tools-add-new-work-file');
+        if (!fileInput.files[0]){
+               msg.textContent = "Загрузите изображение";
+               return;
         }
-    }).catch(error => {
-        alert(error);
+        formData.append('pre_img', fileInput.files[0]);
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/v1/work', true);
+        xhr.setRequestHeader("Authorization", `Bearer ${access_token}`);
+        xhr.onload = function () {
+            console.log(xhr);
+            if (xhr.status === 200) {
+                msg.textContent = "Глава успешно загруженна";
+                msg.style.color = "green";
+            }
+            else if (xhr.status === 400 || xhr.status === 401){
+                msg.textContent = JSON.parse(xhr.response).message;
+                msg.style.color = "red";
+            }
+            else if (xhr.status === 422){
+                msg.textContent = "Для таких действий нужно войти....";
+                msg.style.color = "red";
+            }
+            else {
+                msg.textContent = `Неизвестная ошибка со статусом ${xhr.status}`;
+                msg.style.color = "red";
+            }
+        };
+        xhr.send(formData);
     });
+
+let sidebar_buttons = document.getElementsByClassName("sidebar-menu-button");
+for (let i = 0; i < sidebar_buttons.length; i++){
+    if (!sidebar_buttons.item(i).hasAttribute("data-target"))
+        continue;
+    let target = sidebar_buttons.item(i).getAttribute('data-target');
+    if (!sections.hasOwnProperty(target))
+        continue;
+    if (sections[target]["permission"] > user_role){
+        sidebar_buttons.item(i).style.display = 'none';
+    }
+    sidebar_buttons.item(i).addEventListener('click', function() {
+        if (!sections.hasOwnProperty(target))
+            return;
+        menu_button(target, user_role);
+      });
 }
-
-load_page();
-addReadList();
-addCommentList();
-
-
+document.getElementById("page-comment-last").addEventListener("click", function (ev) {
+    ev.preventDefault();
+    if (page_current - 1 < 0)
+        return;
+    page_current -= 1;
+    urlParameters.set("_p", page_current);
+    history.replaceState(null, null, "?" + urlParameters.toString());
+    get_user_comment(page_load_limit, page_current * page_load_limit);
+})
+document.getElementById("page-comment-next").addEventListener("click", function (ev) {
+    ev.preventDefault();
+    if (page_current + 1 < 0 || page_current + 1 >= page_count)
+        return;
+    page_current += 1;
+    urlParameters.set("_p", page_current);
+        history.replaceState(null, null, "?" + urlParameters.toString());
+    get_user_comment(page_load_limit, page_current * page_load_limit);
+})
+document.getElementById("page-likes-last").addEventListener("click", function (ev) {
+    ev.preventDefault();
+    if (page_current - 1 < 0)
+        return;
+    page_current -= 1;
+    urlParameters.set("_p", page_current);
+    history.replaceState(null, null, "?" + urlParameters.toString());
+    get_user_likes(page_load_limit, page_load_limit * page_current);
+})
+document.getElementById("page-likes-next").addEventListener("click", function (ev) {
+    ev.preventDefault();
+    if (page_current + 1 < 0 || page_current + 1 >= page_count)
+        return;
+    page_current += 1;
+    urlParameters.set("_p", page_current);
+        history.replaceState(null, null, "?" + urlParameters.toString());
+    get_user_likes(page_load_limit, page_current * page_load_limit);
+})
+// urlParameters.set("_section", "comment");
+// history.replaceState(null, null, "?" + urlParameters.toString());
+if (urlParameters.has("_section")) {
+    if (urlParameters.has("_p"))
+        page_current = Number(urlParameters.get("_p"));
+    last_section = urlParameters.get("_section").toString();
+    menu_button(urlParameters.get("_section").toString(), page_current);
+}
+else
+    menu_button("comments", reload=true);
+// location.reload()

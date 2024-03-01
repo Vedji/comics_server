@@ -247,6 +247,20 @@ def init_site_api(app: flask.app.Flask, get_db):
         result["result"] = True
         return jsonify(result)
 
+    @app.route("/api/file_upload", methods=["POST"])
+    def upload_file():
+        if 'file' not in request.files:
+            return {"result": False, "Error_type": 0}
+        if "manga_name" not in request.json:
+            return {"result": False, "Error_type": 1}
+        file = request.files['file']
+        if file.filename == '':
+            return 'No selected file'
+        if file:
+            file.save('uploads/' + file.filename)  # Путь к папке, куда будут сохраняться загруженные файлы
+            return 'File uploaded successfully'
+
+
 
 
 
