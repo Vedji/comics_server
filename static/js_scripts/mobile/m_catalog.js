@@ -6,10 +6,7 @@ let last_element = undefined;
 let count_works = 0;
 let last_fetch_count_works = 0;
 
-document.getElementById("header-menu-open").addEventListener("click", function (ev) {
-    ev.preventDefault();
-    document.getElementById("main-nav-menu").style.display = "block";
-})
+
 document.getElementById("btn-filter-genre").addEventListener("click", function (ev) {
     ev.preventDefault();
     document.getElementById("water-menu").style.display = 'block';
