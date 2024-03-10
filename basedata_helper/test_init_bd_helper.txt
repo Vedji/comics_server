@@ -1,0 +1,3 @@
+BD_TYPE: SQLite                                 # Тип базы данных
+BD_FILE: basedata_test.db                       # Файл базы данных
+BD_PATH_TO_FILES:test_folder/                   # Путь к папке, в котором сохраняются файлы
